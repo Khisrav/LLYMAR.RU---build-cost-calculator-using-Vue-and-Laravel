@@ -151,6 +151,8 @@ export default {
             this.username = response[0].name.split(' ')[1];
         },
         collectTotals() {
+            this.totals.material_type = this.material_type;
+
             this.totals.items = [];
 
             //collectin openings data
@@ -163,10 +165,32 @@ export default {
                     height: parseInt(opening.height)
                 });
             });
+            console.log(this.profiles);
 
             //collecting vendor codes amount data
-            this.totals.items.vendor_codes = [];
-            
+            this.totals.items.vendor_codes = {};
+            this.materials.forEach(material => {
+                if (material.type == this.material_type) {
+                    let vendor_code = parseInt(material.vendor_code.replace(/\D/g,''));
+                    this.totals.items.vendor_codes[vendor_code] = {
+                        id: vendor_code,
+                        type: material.type,
+                        amount: material.amount,
+                        price: material.price
+                    };
+                }
+            });
+            for (let v_code in this.profiles) {
+                let profile = this.profiles[v_code], vc = parseInt(v_code.replace(/\D/g,''));
+                this.totals.items.vendor_codes[vc] = {
+                    id: vc,
+                    type: undefined,
+                    amount: profile.amount,
+                    price: profile.price
+                };
+                // profile.parseInt(v_code.replace(/\D/g,''));
+            }
+
 
             console.log(this.totals);
         }
@@ -179,7 +203,7 @@ export default {
 <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-0">
     <h1 class="mb-4 text-2xl uppercase font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl lg:mb-8">
         Здравствуйте, 
-        <span class="text-transparent bg-clip-text bg-gradient-to-r to-yellow-400 from-orange-600">{{  }}</span>!
+        <span class="text-transparent bg-clip-text bg-gradient-to-r to-yellow-400 from-orange-600">{{ username }}</span>!
     </h1>
 
     <main>
