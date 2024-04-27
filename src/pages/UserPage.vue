@@ -2,7 +2,8 @@
 import ButtonTag from '../components/ButtonTag.vue'
 import InputTag from '../components/InputTag.vue'
 import HeaderLayout from '../layouts/HeaderLayout.vue'
-import { calc, opening_images, material_type, materials, profiles, totals } from '../core/data'
+import { calc, opening_images, material_type, materials, profiles, totals, autoProfiles, additionals } from '../core/data'
+import { getUser } from '../core/user.js'
 
 export default {
     components: {
@@ -12,17 +13,27 @@ export default {
     },
     data() {
         return {
-            user: sessionStorage.getItem('user'),
+            token: sessionStorage.getItem('token'),
             calc: calc,
             opening_images: opening_images,
             material_type: material_type,
             materials: materials,
             profiles: profiles,
+            autoProfiles: autoProfiles,
             totals: totals,
+            additionals: null,
+            username: ''
         }
     },
-    mounted() {
-        if (!this.user) {this.$router.push('/login')}
+    async mounted() {
+        this.additionals = await additionals();
+        this.additionals.forEach(item => {
+            item.total = 0;
+            item.amount = 0;
+        });
+
+        this.getUserName();
+
         this.calculatePrice();
     },
     methods: {
@@ -50,25 +61,73 @@ export default {
             this.calc.openings.splice(index, 1);
             this.calculatePrice();
         },
+        changeOpeningType(index) {
+            if (this.calc.openings[index].type == 'center') {
+                this.calc.openings[index].doors = 4;
+            } else {
+                this.calc.openings[index].doors = 2;
+            }
+            this.calculatePrice();
+        },
         updateMaterialsData() {
             let lrAmount = 0, cAmount = 0;
             this.calc.openings.forEach(opening => {
                 if (opening.type != 'center') lrAmount += (opening.doors * 2 - 2);
-                else cAmount += (opening.doors * 2 - 4);
+                // else cAmount += (opening.doors * 2 - 4);
+                else cAmount++;
             });
 
 
-            this.materials[this.material_type == 'aluminium' ? 0 : 2].amount = lrAmount;
-            this.materials[this.material_type == 'aluminium' ? 1 : 3].amount = cAmount;
+            this.materials[this.material_type == 'aluminium' ? 0 : 2].amount = lrAmount + cAmount;
+            this.materials[this.material_type == 'aluminium' ? 1 : 3].amount = this.material_type == 'aluminium' ?  cAmount != 0 ? 1 : 0 : cAmount;
 
             this.materials.forEach(material => {
                 material.total = material.amount * material.price;
             });
 
-            console.log(this.materials)
+            this.profiles['L1'].total = this.profiles['L1'].amount * this.profiles['L1'].price;
+            this.profiles['L3'].total = this.profiles['L3'].amount * this.profiles['L3'].price;
+
+            this.profiles['L2'].amount = this.profiles['L1'].amount;
+            this.profiles['L2'].total = this.profiles['L2'].amount * this.profiles['L2'].price;
+            this.profiles['L4'].amount = this.profiles['L3'].amount;
+            this.profiles['L4'].total = this.profiles['L4'].amount * this.profiles['L4'].price;
+
+            this.profiles['L5'].total = this.profiles['L5'].amount * this.profiles['L5'].price;
+
+
+            this.autoProfiles.forEach(autoProfile => {
+                autoProfile.amount = 0;
+                switch (autoProfile.vendor_code) {
+                    case 'L6':
+                        // calc.openings.forEach(opening => { autoProfile.amount += (parseInt(opening.doors) * 6); });
+                        autoProfile.amount = this.calc.openings.length * 2;
+                        break;
+                    case 'L12':
+                        autoProfile.amount = 
+                            this.profiles.L2.amount * 6
+                            + this.profiles.L4.amount * 4 
+                            + this.profiles.L5.amount * 2 
+                            + this.materials[2].amount * 3 
+                            + this.materials[3].amount * 3;
+                        break;
+                    case 'L13':
+                        autoProfile.amount = this.materials[0].amount * 3;
+                        break;
+                    case 'L14':
+                        autoProfile.amount = this.autoProfiles[0].amount * 2;
+                        break;
+                    default:
+                        break;
+                }
+                autoProfile.total = autoProfile.amount * autoProfile.price;
+            });
+
+            this.additionals.forEach(item => {
+                item.total = item.amount * item.price;
+            });
         },
         calculatePrice() {
-            console.log('change detected');
             this.updateMaterialsData();
 
             this.totals.totalPrice = 0;
@@ -76,17 +135,51 @@ export default {
             this.materials.forEach(material => {
                 if (material.type == this.material_type) this.totals.totalPrice += material.total;
             });
+
+            ['L1', 'L2', 'L3', 'L4', 'L5'].forEach(index => {
+                this.totals.totalPrice += this.profiles[index].total;
+            });
+
+            this.autoProfiles.forEach(autoProfile => {
+                this.totals.totalPrice += autoProfile.total;
+            });
+
+            this.collectTotals();
+        },
+        async getUserName() {
+            const response = await getUser();
+            this.username = response[0].name.split(' ')[1];
+        },
+        collectTotals() {
+            this.totals.items = [];
+
+            //collectin openings data
+            this.totals.items.openings = [];
+            this.calc.openings.forEach(opening => {
+                this.totals.items.openings.push({
+                    type: opening.type,
+                    doors: parseInt(opening.doors),
+                    width: parseInt(opening.width),
+                    height: parseInt(opening.height)
+                });
+            });
+
+            //collecting vendor codes amount data
+            this.totals.items.vendor_codes = [];
+            
+
+            console.log(this.totals);
         }
     }
 }
 </script>
 
 <template>
-<HeaderLayout :userinfo="user"/>
+<HeaderLayout :authorized="token.length != 0"/>
 <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-0">
     <h1 class="mb-4 text-2xl uppercase font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl lg:mb-8">
-        {{ totals.totalPrice }} Здравствуйте, 
-        <span class="text-transparent bg-clip-text bg-gradient-to-r to-yellow-400 from-orange-600">Александр</span>!
+        Здравствуйте, 
+        <span class="text-transparent bg-clip-text bg-gradient-to-r to-yellow-400 from-orange-600">{{  }}</span>!
     </h1>
 
     <main>
@@ -112,22 +205,23 @@ export default {
                                 <img :src="opening_images[opening.type]" class="rounded-xl">
                             </th>
                             <td class="px-6 py-4 text-base font-semibold text-black">
-                                <select v-model="calc.openings[index].type" @change="calculatePrice()" class="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-54 p-2.5">
+                                <select v-model="calc.openings[index].type" @change="changeOpeningType(index)" class="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-54 p-2.5">
                                     <option value="left">Левый проем</option>
                                     <option value="right">Правый проем</option>
                                     <option value="center">Центральный проем</option>
                                 </select>
                             </td>
                             <td class="px-6 py-4">
+                                <div class="text-center font-bold text-black">{{ opening.doors }}</div>
                                 <!-- <InputTag type="number" v-model="calc.openings[index].doors" @change="calculatePrice()" class="text-center"/> -->
                                 <div v-if="opening.type!='center'" class="relative mb-6">
-                                    <input type="range" v-model="calc.openings[index].doors" @change="calculatePrice()" min="2" max="6" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                                    <input type="range" v-model="calc.openings[index].doors" @change="calculatePrice()" min="2" max="10" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
                                     <span class="text-sm text-black absolute start-0 -bottom-6">2</span>
-                                    <span class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6">4</span>
-                                    <span class="text-sm text-black absolute end-0 -bottom-6">6</span>
+                                    <span class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6">6</span>
+                                    <span class="text-sm text-black absolute end-0 -bottom-6">10</span>
                                 </div>
                                 <div v-else class="relative mb-6">
-                                    <input type="range" v-model="calc.openings[index].doors" @change="calculatePrice()" min="4" max="12" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                                    <input type="range" v-model="calc.openings[index].doors" @change="calculatePrice()" min="4" max="12" step="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
                                     <span class="text-sm text-black absolute start-0 -bottom-6">4</span>
                                     <span class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6">8</span>
                                     <span class="text-sm text-black absolute end-0 -bottom-6">12</span>
@@ -225,7 +319,7 @@ export default {
                             <tr>
                                 <th scope="col" class="px-6 py-3">Картинка</th>
                                 <th scope="col" class="px-6 py-3">Арт.</th>
-                                <th scope="col" class="px-6 py-3">Вид профиля</th>
+                                <th scope="col" class="px-6 py-3">Наименование</th>
                                 <th scope="col" class="px-6 py-3">Цена за ед.</th>
                                 <th scope="col" class="px-6 py-3">Ед. изм.</th>
                                 <th scope="col" class="px-6 py-3">Кол-во</th>
@@ -233,27 +327,140 @@ export default {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(material, index) in materials.filter((m) => { return m.type == material_type })" :key="index" class="bg-white border-b hover:bg-gray-50">
+                            <tr class="bg-white border-b hover:bg-gray-50">
                                 <th scope="row" class="px-6 py-4">
-                                    <img :src="material.img" class="rounded-xl">
+                                    <img :src="profiles['L1'].img" class="rounded-xl">
                                 </th>
                                 <td class="px-6 py-4 text-black">
-                                    {{ material.vendor_code }}
+                                    L1
                                 </td>
                                 <td class="px-6 py-4 font-semibold text-black">
-                                    {{ material.name }}
+                                    {{ profiles['L1'].name }}
                                 </td>
                                 <td class="px-6 py-4 font-semibold">
-                                    {{ material.price }}₽
+                                    {{ profiles['L1'].price }}₽
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ material.unit }}
+                                    {{ profiles['L1'].unit }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ material.amount }}
+                                    <div class="text-center font-bold text-black">{{ profiles['L1'].amount }}</div>
+                                    <div class="relative mb-6">
+                                        <input type="range" v-model="profiles['L1'].amount" @change="calculatePrice()" min="0" max="24" step="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                                        <span class="text-sm text-black absolute start-0 -bottom-6">0</span>
+                                        <span class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6">12</span>
+                                        <span class="text-sm text-black absolute end-0 -bottom-6">24</span>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 font-semibold">
-                                    {{ material.total }}₽
+                                    {{ profiles['L1'].total }}₽
+                                </td>
+                            </tr>
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <th scope="row" class="px-6 py-4">
+                                    <img :src="profiles['L2'].img" class="rounded-xl">
+                                </th>
+                                <td class="px-6 py-4 text-black">
+                                    L2
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-black">
+                                    {{ profiles['L2'].name }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ profiles['L2'].price }}₽
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ profiles['L2'].unit }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-center font-bold text-black">{{ profiles['L2'].amount }}</div>
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ profiles['L2'].total }}₽
+                                </td>
+                            </tr>
+
+                            
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <th scope="row" class="px-6 py-4">
+                                    <img :src="profiles['L3'].img" class="rounded-xl">
+                                </th>
+                                <td class="px-6 py-4 text-black">
+                                    L3
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-black">
+                                    {{ profiles['L3'].name }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ profiles['L3'].price }}₽
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ profiles['L3'].unit }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-center font-bold text-black">{{ profiles['L3'].amount }}</div>
+                                    <div class="relative mb-6">
+                                        <input type="range" v-model="profiles['L3'].amount" @change="calculatePrice()" min="0" max="24" step="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                                        <span class="text-sm text-black absolute start-0 -bottom-6">0</span>
+                                        <span class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6">12</span>
+                                        <span class="text-sm text-black absolute end-0 -bottom-6">24</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ profiles['L3'].total }}₽
+                                </td>
+                            </tr>
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <th scope="row" class="px-6 py-4">
+                                    <img :src="profiles['L4'].img" class="rounded-xl">
+                                </th>
+                                <td class="px-6 py-4 text-black">
+                                    L4
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-black">
+                                    {{ profiles['L4'].name }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ profiles['L4'].price }}₽
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ profiles['L4'].unit }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-center font-bold text-black">{{ profiles['L4'].amount }}</div>
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ profiles['L4'].total }}₽
+                                </td>
+                            </tr>
+
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <th scope="row" class="px-6 py-4">
+                                    <img :src="profiles['L5'].img" class="rounded-xl">
+                                </th>
+                                <td class="px-6 py-4 text-black">
+                                    L5
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-black">
+                                    {{ profiles['L5'].name }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ profiles['L5'].price }}₽
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ profiles['L5'].unit }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-center font-bold text-black">{{ profiles['L5'].amount }}</div>
+                                    <div class="relative mb-6">
+                                        <input type="range" v-model="profiles['L5'].amount" @change="calculatePrice()" min="3" max="24" step="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                                        <span class="text-sm text-black absolute start-0 -bottom-6">3</span>
+                                        <span class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6">12</span>
+                                        <span class="text-sm text-black absolute end-0 -bottom-6">24</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ profiles['L5'].total }}₽
                                 </td>
                             </tr>
                         </tbody>
@@ -261,6 +468,102 @@ export default {
                 </div>
             </div>
         </div>
+        
+        <div class="block">
+            <div class="shadow-2xl mt-8 pt-8 rounded-2xl shadow-primary-200">
+                <div class="relative overflow-x-auto rounded-2xl shadow-2xl shadow-primary-200">
+                    <table class=" w-full text-sm text-left rtl:text-right text-gray-500">
+                        <thead class="text-xs text-primary-900 uppercase bg-primary-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Картинка</th>
+                                <th scope="col" class="px-6 py-3">Арт.</th>
+                                <th scope="col" class="px-6 py-3">Наименование</th>
+                                <th scope="col" class="px-6 py-3">Цена за ед.</th>
+                                <th scope="col" class="px-6 py-3">Ед. изм.</th>
+                                <th scope="col" class="px-6 py-3">Кол-во</th>
+                                <th scope="col" class="px-6 py-3">Итого</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(autoProfile, index) in autoProfiles" :key="index" class="bg-white border-b hover:bg-gray-50">
+                                <th scope="row" class="px-6 py-4">
+                                    <img :src="autoProfile.img" class="rounded-xl">
+                                </th>
+                                <td class="px-6 py-4 text-black">
+                                    {{ autoProfile.vendor_code }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-black">
+                                    {{ autoProfile.name }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ autoProfile.price }}₽
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ autoProfile.unit }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-center font-bold text-black">{{ autoProfile.amount }}</div>
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ autoProfile.total }}₽
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="block">
+            <h3 class="text-xl lg:text-2xl uppercase font-bold py-4 mt-8">Дополнительно</h3>
+            <div class="shadow-2xl rounded-2xl shadow-primary-200">
+                <div class="relative overflow-x-auto rounded-2xl shadow-2xl shadow-primary-200">
+                    <table class=" w-full text-sm text-left rtl:text-right text-gray-500">
+                        <thead class="text-xs text-primary-900 uppercase bg-primary-100">
+                            <tr>
+                                <!-- <th scope="col" class="px-6 py-3">Картинка</th> -->
+                                <th scope="col" class="px-6 py-3">Арт.</th>
+                                <th scope="col" class="px-6 py-3">Наименование</th>
+                                <th scope="col" class="px-6 py-3">Цена за ед.</th>
+                                <th scope="col" class="px-6 py-3">Ед. изм.</th>
+                                <th scope="col" class="px-6 py-3">Кол-во</th>
+                                <th scope="col" class="px-6 py-3">Итого</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in additionals" class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 text-black">
+                                    L{{ item.vendor_code }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-black">
+                                    {{ item.name }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ item.price }}₽
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ item.unit }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    <div class="text-center font-bold text-black">{{ item.amount }}</div>
+                                    <div class="relative mb-6">
+                                        <input type="range" v-model="item.amount" @change="calculatePrice()" min="0" max="24" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                                        <span class="text-sm text-black absolute start-0 -bottom-6">0</span>
+                                        <span class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6">12</span>
+                                        <span class="text-sm text-black absolute end-0 -bottom-6">24</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 font-semibold">
+                                    {{ item.total }}₽
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <h1 class=" text-4xl mt-10 mb-10">Итого: <b> {{ totals.totalPrice }}₽</b></h1>
     </main>
 
 <!-- <div class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 overflow-hidden bg-white border border-gray-200 rounded-full bottom-4 left-1/2 shadow-2xl shadow-primary-700">

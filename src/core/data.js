@@ -1,3 +1,17 @@
+import axios from "axios";
+import { API_BASE_URL } from './config';
+
+const api = axios.create({
+    baseURL: API_BASE_URL,
+});
+
+export const additionals = async () => {
+    try {
+        const response = await api.get("/items", { headers: { 'Authorization': `Bearer ${ sessionStorage.getItem('token') }` } });
+        return response.data;
+    } catch (error) { return error; }
+};
+
 export const opening_images = {
     left: 'https://random.imagecdn.app/300/149',
     right: 'https://random.imagecdn.app/300/151',
@@ -74,35 +88,83 @@ export let materials = [
 export let profiles = {
     L1: {
         price: 800,
+        name: 'Профиль опорный - нижний на 3 стекла',
         unit: 'м.п.',
         amount: 0,
         total: 0,
+        img: 'https://random.imagecdn.app/300/150'
     },
     L2: {
         price: 900,
+        name: 'Профиль опорный - верхний на 3 стекла',
         unit: 'м.п.',
         amount: 0,
         total: 0,
+        img: 'https://random.imagecdn.app/300/150'
     },
     L3: {
         price: 700,
+        name: 'Профиль опорный - нижний на 2 стекла',
         unit: 'м.п.',
         amount: 0,
         total: 0,
+        img: 'https://random.imagecdn.app/300/150'
     },
     L4: {
         price: 800,
+        name: 'Профиль опорный - верхний на 2 стекла',
         unit: 'м.п.',
         amount: 0,
         total: 0,
+        img: 'https://random.imagecdn.app/300/150'
     },
     L5: {
         price: 700,
+        name: 'Профиль створочный',
         unit: 'м.п.',
-        amount: 0,
+        amount: 3,
         total: 0,
+        img: 'https://random.imagecdn.app/300/150'
     },
 };
+export let autoProfiles = [
+    {
+        vendor_code: 'L6',
+        name: 'Профиль пристенный',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 300,
+        unit: 'м.п.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L12',
+        name: 'Фетр щеточный 7*6',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 25,
+        unit: 'м.п.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L13',
+        name: 'Фетр щеточный 4*8',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 35,
+        unit: 'м.п.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L14',
+        name: 'Фетр щеточный 7*10',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'м.п.',
+        amount: 0,
+        total: 0
+    },
+];
 export let totals = {
     totalPrice: 0,
-} 
+};

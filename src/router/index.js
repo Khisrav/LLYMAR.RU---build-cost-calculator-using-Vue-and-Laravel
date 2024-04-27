@@ -23,6 +23,15 @@ const router = createRouter({
       }
     },
     {
+      path: '/logout',
+      name: 'logout',
+      component: () => import('../pages/LogoutPage.vue'),
+      meta: {
+        requiresAuth: false,
+        title: 'Home Page'
+      }
+    },
+    {
       path: '/user',
       name: 'user',
       component: () => import('../pages/UserPage.vue'),
@@ -36,7 +45,13 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || DEFAULT_TITLE;  
-  next();
+  if (to.meta.requiresAuth && !sessionStorage.getItem('token')) {
+    // Redirect to the login page if not authenticated
+    next('/login');
+  } else { 
+    // Continue to the requested route
+    next();
+  }
 });
 
 export default router;

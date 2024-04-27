@@ -5,7 +5,7 @@ import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
 
 export default {
-  props: ['userinfo'],
+  props: ['authorized'],
   components: {
     ButtonLink
   },
@@ -42,10 +42,10 @@ export default {
                 <span class="self-center text-xl font-black whitespace-nowrap">{{ appname }}</span>
             </router-link>
             <div class="flex items-center lg:order-2">
-                <ButtonLink v-if="!userinfo" :to="'/login'">Войти</ButtonLink>
+                <ButtonLink v-if="!authorized" :to="'/login'">Войти</ButtonLink>
                 <div v-else>
-                  <router-link :to="'/user/edit'" class="text-sm px-4 lg:px-5 py-2 lg:py-2.5">Аккаунт</router-link>
-                  <router-link :to="'/logout'" class="text-sm px-4 lg:px-5 py-2 lg:py-2.5">Выйти</router-link>
+                  <router-link :to="'/user/edit'" class="text-sm px-2 lg:px-2 py-2 lg:py-2">Аккаунт</router-link>
+                  <router-link :to="'/logout'" class="text-sm px-2 lg:px-2 py-2 lg:py-2 lg:pr-0">Выйти</router-link>
                 </div>
                 <button data-collapse-toggle="mobile-menu-2" type="button" class="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
                     <span class="sr-only">Open main menu</span>
