@@ -148,6 +148,7 @@ export default {
         },
         async getUserName() {
             const response = await getUser();
+            console.log(response);
             this.username = response[0].name.split(' ')[1];
         },
         collectTotals() {
