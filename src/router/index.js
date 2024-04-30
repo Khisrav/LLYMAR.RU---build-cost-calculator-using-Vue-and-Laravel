@@ -1,8 +1,8 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import { DEFAULT_TITLE } from '../core/config';
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -27,7 +27,7 @@ const router = createRouter({
       name: 'logout',
       component: () => import('../pages/LogoutPage.vue'),
       meta: {
-        requiresAuth: false,
+        requiresAuth: true,
         title: 'Home Page'
       }
     },
