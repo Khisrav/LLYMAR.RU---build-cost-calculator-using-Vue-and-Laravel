@@ -27,7 +27,7 @@ const router = createRouter({
       name: 'logout',
       component: () => import('../pages/LogoutPage.vue'),
       meta: {
-        requiresAuth: true,
+        requiresAuth: false,
         title: 'Home Page'
       }
     },
@@ -36,7 +36,7 @@ const router = createRouter({
       name: 'user',
       component: () => import('../pages/UserPage.vue'),
       meta: {
-        requiresAuth: true,
+        requiresAuth: false,
         title: 'Home Page'
       }
     },
