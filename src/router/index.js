@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { DEFAULT_TITLE } from '../core/config';
+import { checkAuth } from '../core/auth';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,7 +11,7 @@ const router = createRouter({
       component: () => import('../pages/HomePage.vue'),
       meta: {
         requiresAuth: false,
-        title: 'Home Page'
+        title: 'LLYMAR.RU'
       }
     },
     {
@@ -19,7 +20,7 @@ const router = createRouter({
       component: () => import('../pages/LoginPage.vue'),
       meta: {
         requiresAuth: false,
-        title: 'Home Page'
+        title: 'Вход - LLYMAR.RU'
       }
     },
     {
@@ -27,25 +28,44 @@ const router = createRouter({
       name: 'logout',
       component: () => import('../pages/LogoutPage.vue'),
       meta: {
-        requiresAuth: false,
-        title: 'Home Page'
+        requiresAuth: true,
+        title: 'Выход'
       }
     },
     {
-      path: '/user',
-      name: 'user',
-      component: () => import('../pages/UserPage.vue'),
+      path: '/user/calculator',
+      name: 'calculator',
+      component: () => import('../pages/CalcPage.vue'),
       meta: {
-        requiresAuth: false,
-        title: 'Home Page'
+        requiresAuth: true,
+        title: 'Калькулятор - LLYMAR.RU'
+      }
+    },
+    {
+      path: '/user/account',
+      name: 'account',
+      component: () => import('../pages/AccountPage.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Аккаунт - LLYMAR.RU'
+      }
+    },
+    {
+      path: '/user/history',
+      name: 'history',
+      component: () => import('../pages/HistoryPage.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Калькулятор - LLYMAR.RU'
       }
     },
   ]
 });
 
-router.beforeEach((to, from, next) => {
-  document.title = to.meta.title || DEFAULT_TITLE;  
-  if (to.meta.requiresAuth && !sessionStorage.getItem('token')) {
+router.beforeEach(async (to, from, next) => {
+  document.title = to.meta.title || DEFAULT_TITLE; 
+  const chk = await checkAuth();
+  if (to.meta.requiresAuth && !sessionStorage.getItem('token') && !chk) {
     // Redirect to the login page if not authenticated
     next('/login');
   } else { 

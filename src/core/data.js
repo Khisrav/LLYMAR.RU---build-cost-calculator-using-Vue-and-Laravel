@@ -13,9 +13,9 @@ export const additionals = async () => {
 };
 
 export const opening_images = {
-    left: 'https://random.imagecdn.app/300/149',
-    right: 'https://random.imagecdn.app/300/151',
-    center: 'https://random.imagecdn.app/300/150',
+    left: '/assets/openings-left.jpg',
+    right: '/assets/openings-right.jpg',
+    center: '/assets/openings-center.jpg',
 };
 export let calc = {
     openings: [
@@ -47,7 +47,7 @@ export let materials = [
     {
         type: 'aluminium',
         name: 'Алюминиевый межстворочный профиль',
-        img: 'https://random.imagecdn.app/300/148',
+        img: '/assets/L8.jpg',
         vendor_code: 'L8',
         price: 90,
         unit: 'шт.',
@@ -57,7 +57,7 @@ export let materials = [
     {
         type: 'aluminium',
         name: 'Алюминиевый стекольно-торцевой профиль',
-        img: 'https://random.imagecdn.app/300/148',
+        img: '/assets/L9.jpg',
         vendor_code: 'L9',
         price: 90,
         unit: 'шт.',
@@ -124,7 +124,7 @@ export let profiles = {
         unit: 'м.п.',
         amount: 3,
         total: 0,
-        img: 'https://random.imagecdn.app/300/150'
+        img: '/assets/L5.jpg',
     },
 };
 export let autoProfiles = [

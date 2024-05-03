@@ -13,17 +13,43 @@ export const login = async (email, password) => {
             return response.data;
         }
     } catch (error) {
-        return error;
+        return false;
     }
 };
 
 export const logout = async () => {
-    const response = await api.post("/logout", {}, { headers: { Authorization: `Bearer ${ sessionStorage.getItem('token') }` } })
-        .then((response) => {
+    try {
+        await api.post("/logout", {}, { headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` } });
+        sessionStorage.removeItem('token');
+    } catch (error) {
+        throw new Error("Failed to logout.");
+    }
+};
+
+export const checkAuth = async () => {
+    // try {
+    //     const response = api.get("/user", { headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` } });
+    //     return response;
+    // } catch (error) {
+    //     const status = error.response.status;
+    //     console.log(status);
+    //     if (status === 401) {
+    //         console.log(401);
+    //         sessionStorage.removeItem('token');
+    //         return false;
+    //     } else {
+    //         throw new Error("Failed to check authentication status.");
+    //     }
+    // }
+    api.get("/user", { headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` } }).then(function(response) {
+        return response;
+    }).catch(function (error) {
+        const status = error.response.status;
+        if (status === 401) {
             sessionStorage.removeItem('token');
-            return response.data;
-        })
-        .catch((error) => {
-            throw error;
-        });
+            return false;
+        } else {
+            throw new Error("Failed to check authentication status.");
+        }
+    });
 };
