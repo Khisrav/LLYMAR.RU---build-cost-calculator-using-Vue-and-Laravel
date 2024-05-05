@@ -22,7 +22,7 @@ export default {
     },
     mounted() {
         if (sessionStorage.getItem('token')) {
-            this.$router.push('/user/history');
+            this.$router.push('/user/calculator');
         }
     },
     methods: {
@@ -39,7 +39,7 @@ export default {
 
                 const response = await login(this.email, this.password);
                 if (response.access_token) {
-                    this.$router.push('/user');
+                    this.$router.push('/user/calculator');
                 } else {
                     this.displayError = true;
                     this.processing = false;

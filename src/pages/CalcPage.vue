@@ -160,6 +160,10 @@ export default {
                 this.totals.totalPrice += autoProfile.total;
             });
 
+            this.additionals.forEach(add => {
+                this.totals.totalPrice += parseInt(add.total);
+            });
+
             this.collectTotals();
         },
         async getUserName() {
@@ -213,6 +217,15 @@ export default {
                 };
                 // profile.parseInt(v_code.replace(/\D/g,''));
             }
+            this.autoProfiles.forEach(autoProfile => {
+                let vc = parseInt(autoProfile.vendor_code.replace(/\D/g,''));
+                this.totals.vendorCodes[vc] = {
+                    id: vc,
+                    type: undefined,
+                    amount: autoProfile.amount,
+                    price: autoProfile.price
+                }
+            });
 
             this.totals.additionals = [];
             this.additionals.forEach(additional => {

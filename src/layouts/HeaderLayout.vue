@@ -55,8 +55,11 @@ export default {
                     <li v-if="!authorized" v-for="navLink in navLinks">
                         <router-link :to="navLink['path']" class="block py-2 pr-4 pl-3 text-black lg:p-0">{{ navLink['name'] }}</router-link>
                     </li>
-                    <li v-if="authorized">
+                    <!-- <li v-if="authorized">
                       <router-link to="/user/history" class="block py-2 pr-4 pl-3 text-black lg:p-0">История</router-link>
+                    </li> -->
+                    <li v-if="authorized">
+                      <router-link to="/" class="block py-2 pr-4 pl-3 text-black lg:p-0">Главная</router-link>
                     </li>
                     <li v-if="authorized">
                       <router-link to="/user/account" class="block py-2 pr-4 pl-3 text-black lg:p-0">Аккаунт</router-link>
