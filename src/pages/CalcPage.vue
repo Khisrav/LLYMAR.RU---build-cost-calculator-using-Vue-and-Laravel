@@ -315,6 +315,7 @@ export default {
     },
     async sendTotals() {
       try {
+        this.totals.totalPrice = this.discount != 0 ? this.totals.totalPrice * (100 - this.discount) / 100 : this.totals.totalPrice
         const response = await axios.post(
           API_BASE_URL + "/order",
           {
@@ -868,7 +869,7 @@ export default {
       </div>
 
       <h1 class="hidden print:block text-4xl mt-10 mb-10">
-        Итого: <b> {{ totals.totalPrice }}₽</b>
+        Итого: <b> {{ discount != 0 ? totals.totalPrice * (100 - discount) / 100 : totals.totalPrice }}₽</b>
       </h1>
       <div class="my-16"></div>
     </main>
@@ -881,10 +882,10 @@ export default {
           class="inline-flex flex-col items-center justify-center text-center px-5 rounded-s-full hover:bg-gray-50 dark:hover:bg-gray-800 group"
         >
           <span class="line-through block text-sm"
-            >{{ discount != 0 ? (totals.totalPrice * 100) / discount : totals.totalPrice }} ₽</span
+            >{{ totals.totalPrice }} ₽</span
           >
           <span
-            ><b>{{ totals.totalPrice }}₽</b></span
+            ><b>{{ discount != 0 ? totals.totalPrice * (100 - discount) / 100 : totals.totalPrice }}₽</b></span
           >
         </div>
         <div
