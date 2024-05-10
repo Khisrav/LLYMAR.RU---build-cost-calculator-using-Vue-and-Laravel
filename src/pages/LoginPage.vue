@@ -62,7 +62,7 @@ export default {
                 <form class="space-y-4 md:space-y-6" method="post" @submit.prevent="performLogin()">
                     <div>
                         <label for="phone" class="block mb-1 text-sm font-medium text-black dark:text-white">Почта</label>
-                        <InputTag type="tel" id="email" v-model="email" placeholder="Введите почту" class="w-full" required/>
+                        <InputTag type="email" id="email" v-model="email" placeholder="Введите почту" class="w-full" required/>
                     </div>
                     <div>
                         <label for="password" class="block mb-1 text-sm font-medium text-black dark:text-white">Пароль</label>

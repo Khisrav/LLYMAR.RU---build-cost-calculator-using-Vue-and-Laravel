@@ -65,6 +65,9 @@ export default {
                       <router-link to="/user/account" class="block py-2 pr-4 pl-3 text-black lg:p-0">Аккаунт</router-link>
                     </li>
                     <li v-if="authorized">
+                      <router-link to="/user/history" class="block py-2 pr-4 pl-3 text-black lg:p-0">История</router-link>
+                    </li>
+                    <li v-if="authorized">
                       <router-link to="/user/calculator" class="block py-2 pr-4 pl-3 text-black lg:p-0">Калькулятор</router-link>
                     </li>
                 </ul>

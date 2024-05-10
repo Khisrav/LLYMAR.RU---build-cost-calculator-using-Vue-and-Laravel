@@ -59,6 +59,24 @@ const router = createRouter({
         title: 'Калькулятор - LLYMAR.RU'
       }
     },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../pages/RedirectPage.vue'),
+      meta: {
+        requiresAuth: false,
+        title: 'Перенаправляю - LLYMAR.RU'
+      }
+    },
+    {
+      path: '/generate-pdf/:id',
+      name: 'pdf-generator',
+      component: () => import('../pages/GeneratorPage.vue'),
+      meta: {
+        requiresAuth: false,
+        title: 'Печать расчета - LLYMAR.RU'
+      }
+    },
   ]
 });
 

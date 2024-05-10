@@ -42,49 +42,16 @@ export let calc = {
         },
     ]
 };
+
 export let material_type = 'aluminium';
-export let materials = [
-    {
-        type: 'aluminium',
-        name: 'Алюминиевый межстворочный профиль',
-        img: '/assets/L8.jpg',
-        vendor_code: 'L8',
-        price: 90,
-        unit: 'шт.',
-        amount: 0,
-        total: 0
-    },
-    {
-        type: 'aluminium',
-        name: 'Алюминиевый стекольно-торцевой профиль',
-        img: '/assets/L9.jpg',
-        vendor_code: 'L9',
-        price: 90,
-        unit: 'шт.',
-        amount: 0,
-        total: 0
-    },
-    {
-        type: 'polycarbonate',
-        name: 'Поликарбонатный межстворочный профиль',
-        img: 'https://random.imagecdn.app/301/148',
-        vendor_code: 'L10',
-        price: 90,
-        unit: 'шт.',
-        amount: 0,
-        total: 0
-    },
-    {
-        type: 'polycarbonate',
-        name: 'Поликарбонатный стекольно-торцевой профиль',
-        img: 'https://random.imagecdn.app/301/148',
-        vendor_code: 'L11',
-        price: 90,
-        unit: 'шт.',
-        amount: 0,
-        total: 0
-    },
-];
+
+export let materials = async () => {
+    try {
+        const response = await api.get("/vendors", { headers: { 'Authorization': `Bearer ${ sessionStorage.getItem('token') }` } });
+        return response.data;
+    } catch (error) { return error; }
+};
+
 export let profiles = {
     L1: {
         price: 800,
@@ -92,7 +59,7 @@ export let profiles = {
         unit: 'м.п.',
         amount: 0,
         total: 0,
-        img: 'https://random.imagecdn.app/300/150'
+        img: 'http://127.0.0.1:8000/storage/01HXEGR50V6ANM434PZH9JT7HB.png'
     },
     L2: {
         price: 900,
