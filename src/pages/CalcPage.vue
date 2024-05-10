@@ -881,7 +881,7 @@ export default {
           class="inline-flex flex-col items-center justify-center text-center px-5 rounded-s-full hover:bg-gray-50 dark:hover:bg-gray-800 group"
         >
           <span class="line-through block text-sm"
-            >{{ (totals.totalPrice * 100) / discount }} ₽</span
+            >{{ discount != 0 ? (totals.totalPrice * 100) / discount : totals.totalPrice }} ₽</span
           >
           <span
             ><b>{{ totals.totalPrice }}₽</b></span
