@@ -1,29 +1,54 @@
 <script>
 import axios from "axios";
-import { API_BASE_URL } from "../core/config";
+import { API_BASE_URL, STORAGE_LINK } from "../core/config";
+import { opening_images } from "../core/data";
+import ButtonLink from "../components/ButtonLink.vue";
 
 export default {
+  components: {
+    ButtonLink,
+  },
   data() {
     return {
       order: [],
       additionals: [],
       vendorsAmount: [],
       openings: [],
+      user: [],
+      opening_images: opening_images,
+      vendors: [],
+      items: [],
+      totalImages: 0,
     };
   },
   async mounted() {
     try {
-      const response = await axios.get(API_BASE_URL + `/pdf/${this.$route.params.id}`, {
-        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-      });
+      const response = await axios.get(
+        API_BASE_URL + `/pdf/${this.$route.params.userID}/${this.$route.params.orderID}`,
+        {
+          headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+        }
+      );
 
       if (response.data) {
+        this.user = response.data.user;
         this.order = response.data.order;
         this.additionals = response.data.additionals;
         this.vendorsAmount = response.data.vendorsAmount;
         this.openings = response.data.openings;
-        setTimeout(() => {
-          print();
+        this.vendors = response.data.vendors;
+        this.items = response.data.items;
+
+        var timeoutRef = setTimeout(() => {
+          var intervalRef = setInterval(() => {
+            this.checkImages((allLoaded) => {
+              if (allLoaded) {
+                print();
+                clearInterval(intervalRef); // Clear the interval
+                clearTimeout(timeoutRef); // Clear the timeout
+              }
+            });
+          }, 100);
         }, 300);
       } else {
         console.error("Empty response data.");
@@ -33,6 +58,26 @@ export default {
     }
   },
   methods: {
+    checkImages(callback) {
+      var imgs = document.images,
+        len = imgs.length,
+        counter = 0;
+
+      [].forEach.call(imgs, function (img) {
+        if (img.complete) {
+          incrementCounter();
+        } else {
+          img.addEventListener("load", incrementCounter, false);
+        }
+      });
+
+      function incrementCounter() {
+        counter++;
+        if (counter === len) {
+          callback(true);
+        }
+      }
+    },
     formatDate(dateStr) {
       const date = new Date(dateStr);
 
@@ -71,6 +116,44 @@ export default {
         return numberString;
       }
     },
+    async userInfo(userID) {
+      console.log(this.openings[0]);
+      try {
+        const response = await axios.get(API_BASE_URL + "/user", {
+          headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+        });
+
+        if (response.data) {
+          this.user = response.data;
+          console.log(this.user);
+          // setTimeout(() => {
+          //   print();
+          // }, 300);
+        } else {
+          console.error("Empty response data.");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    },
+    getVendorImage(vendor_id) {
+      let temp;
+      this.vendors.forEach((v) => {
+        if (v.vendor_code == vendor_id) {
+          temp = STORAGE_LINK + v.img;
+        }
+      });
+      return temp;
+    },
+    getItemImage(item_id) {
+      let temp;
+      this.items.forEach((i) => {
+        if (i.vendor_code == item_id) {
+          temp = STORAGE_LINK + i.img;
+        }
+      });
+      return temp;
+    },
   },
 };
 </script>
@@ -108,10 +191,38 @@ export default {
         <span class="float-right font-semibold">{{ formatDate(order.created_at) }}</span>
       </p>
       <p class="fonta-normal text-gray-700 mt-3">
-        Общая стоимость:
+        <sup>*</sup>Общая стоимость:
         <span class="float-right font-semibold"
           >{{ formatNumber(order.total_price) }} ₽</span
         >
+      </p>
+      <span class="text-xs text-slate-400 mb-3 inline-block"
+        ><sup>*</sup>Общая стоимость указана с учетом скидок</span
+      >
+      <hr class="border-1" />
+      <p class="fonta-normal text-gray-700 mt-3">
+        Ф.И.О:
+        <span class="float-right font-semibold">{{ user.name }}</span>
+      </p>
+      <p class="fonta-normal text-gray-700 mt-3">
+        Почта:
+        <a :href="`mailto:${user.email}`" class="float-right font-semibold">{{
+          user.email
+        }}</a>
+      </p>
+      <p class="fonta-normal text-gray-700 mt-3">
+        Телефон:
+        <a :href="`tel:${user.phone}`" class="float-right font-semibold">{{
+          user.phone
+        }}</a>
+      </p>
+      <p v-if="user.company" class="fonta-normal text-gray-700 mt-3">
+        Организация:
+        <span class="float-right font-semibold">{{ user.company }}</span>
+      </p>
+      <p v-if="user.address" class="fonta-normal text-gray-700 mt-3">
+        Адрес:
+        <span class="float-right font-semibold">{{ user.address }}</span>
       </p>
     </div>
 
@@ -121,6 +232,7 @@ export default {
     <table class="w-full">
       <thead>
         <tr>
+          <th>Картинка</th>
           <th>Тип проема</th>
           <th>Кол-во створок</th>
           <th>Ш x В (мм)</th>
@@ -128,6 +240,9 @@ export default {
       </thead>
       <tbody>
         <tr v-for="(opening, index) in openings" :key="index">
+          <td>
+            <img :src="opening_images[opening.type]" style="max-width: 300px" />
+          </td>
           <td>{{ opening.name }}</td>
           <td>{{ opening.doors }}</td>
           <td>{{ opening.width }} x {{ opening.height }}</td>
@@ -141,6 +256,7 @@ export default {
     <table class="w-full">
       <thead>
         <tr>
+          <th>Картинка</th>
           <th>Арт.</th>
           <th>Цена</th>
           <th>Кол-во</th>
@@ -149,6 +265,12 @@ export default {
       </thead>
       <tbody>
         <tr v-for="(vendor, index) in vendorsAmount" :key="index">
+          <td>
+            <img
+              :src="getVendorImage(vendor.vendor_code_id)"
+              style="max-width: 300px; max-height: 150px"
+            />
+          </td>
           <td>L{{ vendor.vendor_code_id }}</td>
           <td>{{ vendor.price }}</td>
           <td>{{ vendor.amount }}</td>
@@ -159,6 +281,12 @@ export default {
           v-for="(item, index) in additionals"
           :key="index"
         >
+          <td>
+            <img
+              :src="getItemImage(item.item_id)"
+              style="max-width: 300px; max-height: 150px"
+            />
+          </td>
           <td>L{{ item.item_id }}</td>
           <td>{{ item.price }}</td>
           <td>{{ item.amount }}</td>
@@ -173,7 +301,7 @@ export default {
 th,
 td {
   border: 1px solid #000;
-  padding: 16px;
+  padding: 2px;
   text-align: center;
 }
 </style>

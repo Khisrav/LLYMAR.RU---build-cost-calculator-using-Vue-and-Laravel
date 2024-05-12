@@ -24,6 +24,15 @@ const router = createRouter({
       }
     },
     {
+      path: '/register',
+      name: 'register',
+      component: () => import('../pages/RegisterPage.vue'),
+      meta: {
+        requiresAuth: false,
+        title: 'Регистрация - LLYMAR.RU'
+      }
+    },
+    {
       path: '/logout',
       name: 'logout',
       component: () => import('../pages/LogoutPage.vue'),
@@ -69,7 +78,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/generate-pdf/:id',
+      path: '/generate-pdf/:userID-:orderID',
       name: 'pdf-generator',
       component: () => import('../pages/GeneratorPage.vue'),
       meta: {
