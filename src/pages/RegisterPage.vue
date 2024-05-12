@@ -3,6 +3,7 @@ import HeaderLayout from "../layouts/HeaderLayout.vue";
 import ButtonTag from "../components/ButtonTag.vue";
 import { mask } from "vue-the-mask";
 import axios from "axios";
+import { CHAT_ID, TELEGRAM_TOKEN } from "../core/config";
 
 export default {
   components: {
@@ -17,22 +18,22 @@ export default {
       address: "",
       email: "",
       comment: "",
-      telegramBotToken: "7076728599:AAHy3OlJAHdy4uBIRQDSk-4vxpLQtXHqzDo",
-      chatId: "1199498323", // Replace with your chat ID
+      telegramBotToken: TELEGRAM_TOKEN,
+      chatId: CHAT_ID,
     };
   },
   methods: {
     async sendMessage() {
       const message = `
-Новая заявка:
-Телефон: ${this.phone}
-Ф.И.О: ${this.name}
-Организация: ${this.company}
-Адрес: ${this.address}
-Почта: ${this.email}
-\n\n
-Комментарий: ${this.comment}
-      `;
+<b>Заявка на регистрацию</b>
+\n
+<u>Телефон:</u> <code>${this.phone}</code>
+<u>Ф.И.О:</u> <code>${this.name}</code>
+<u>Организация:</u> <code>${this.company}</code>
+<u>Адрес:</u> <code>${this.address}</code>
+<u>Почта:</u> <code>${this.email}</code>
+\n
+Комментарий: <i>${this.comment}</i>`;
       console.log("sending");
       try {
         await axios.post(
@@ -40,16 +41,17 @@ export default {
           {
             chat_id: this.chatId,
             text: message,
+            parse_mode: "HTML",
           }
         );
         alert("Ваша заявка отправлена! Мы с вами скоро свяжемся!");
         // Optionally, you can clear the form fields after sending the message
-        this.phone = "";
-        this.name = "";
-        this.company = "";
-        this.address = "";
-        this.email = "";
-        this.comment = "";
+        // this.phone = "";
+        // this.name = "";
+        // this.company = "";
+        // this.address = "";
+        // this.email = "";
+        // this.comment = "";
       } catch (error) {
         console.error("Error sending message:", error);
         alert("Failed to send message. Please try again later.");

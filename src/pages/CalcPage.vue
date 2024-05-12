@@ -14,7 +14,7 @@ import {
 } from "../core/data.js";
 import { getUser } from "../core/user.js";
 import axios from "axios";
-import { API_BASE_URL, STORAGE_LINK } from "../core/config.js";
+import { API_BASE_URL, CHAT_ID, STORAGE_LINK, TELEGRAM_TOKEN } from "../core/config.js";
 
 export default {
   components: {
@@ -35,12 +35,15 @@ export default {
       additionals: null,
       defaultAdditionals: null,
       username: "",
+      user_id: null,
       showSuccess: false,
       showError: false,
       showAuthError: false,
       discount: 0,
       vendors: null,
       comment: "",
+      telegramBotToken: TELEGRAM_TOKEN,
+      chatId: CHAT_ID,
     };
   },
   async beforeMount() {
@@ -250,6 +253,7 @@ export default {
       const response = await getUser();
       this.username = response.name.split(" ")[1];
       this.discount = response.discount;
+      this.user_id = response.id;
     },
     clearFields() {
       // this.calc = calc;
@@ -356,9 +360,11 @@ export default {
           this.toast(true);
           this.clearFields();
 
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
+          if (this.sendMessage(response.data.order_id)) {
+            setTimeout(() => {
+              // window.location.reload();
+            }, 1000);
+          }
         } else {
           this.toast(401);
         }
@@ -366,9 +372,36 @@ export default {
         this.toast(false);
       }
     },
-    printOrder() {
-      print();
+    async sendMessage(order_id) {
+      const message = `
+<b>Новый расчет №${order_id}</b>
+\n
+<u>Тип профиля:</u> <code>${
+        this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"
+      }</code>
+<u>Комментарий:</u> <i>${this.comment}</i>
+<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>
+\n
+<a href='https://llymar.ru/generate-pdf/${this.user_id}/${order_id}'>Ссылка на PDF</a>`;
+      console.log("sending");
+      try {
+        await axios.post(
+          `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
+          {
+            chat_id: this.chatId,
+            text: message,
+            parse_mode: "HTML",
+          }
+        );
+        return true;
+      } catch (error) {
+        console.error("Error sending message:", error);
+        alert("Failed to send message. Please try again later.");
+      }
     },
+    // printOrder() {
+    //   print();
+    // },
     toast(bln) {
       if (bln == 401) {
         this.showAuthError = true;
