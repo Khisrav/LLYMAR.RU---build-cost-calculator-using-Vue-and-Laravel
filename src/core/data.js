@@ -131,6 +131,78 @@ export let autoProfiles = [
         amount: 0,
         total: 0
     },
+    {
+        vendor_code: 'L15',
+        name: '',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L16',
+        name: '',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L17',
+        name: '',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L18',
+        name: '',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L19',
+        name: '',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L20',
+        name: '',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L21',
+        name: '',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
+    {
+        vendor_code: 'L22',
+        name: '',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
 ];
 export let totals = {
     totalPrice: 0,

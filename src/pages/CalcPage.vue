@@ -69,14 +69,23 @@ export default {
       L12: 1,
       L13: 2,
       L14: 3,
+      L15: 4,
+      L16: 5,
+      L17: 6,
+      L18: 7,
+      L19: 8,
+      L20: 9,
+      L21: 10,
+      L22: 11,
     };
     this.vendors.forEach((vendor) => {
       if (vendor.vendor_code <= 5) {
         this.profiles[`L${vendor.vendor_code}`]["img"] = STORAGE_LINK + vendor.img;
       } else if (
         vendor.vendor_code == 6 ||
-        (vendor.vendor_code >= 12 && vendor.vendor_code <= 14)
+        (vendor.vendor_code >= 12 && vendor.vendor_code <= 22)
       ) {
+        // console.log(`L${vendor.vendor_code} - ${vendor.name}`);
         this.autoProfiles[temp_indexes[`L${vendor.vendor_code}`]] = {
           vendor_code: `L${vendor.vendor_code}`,
           name: vendor.name,
@@ -86,6 +95,7 @@ export default {
           amount: 0,
           total: 0,
         };
+        console.log(this.autoProfiles[temp_indexes[`L${vendor.vendor_code}`]]);
       }
     });
 
@@ -156,21 +166,34 @@ export default {
     updateMaterialsData() {
       let lrAmount = 0,
         cAmount = 0,
-        onlyCentalAmount = 0;
+        onlyCentralAmount = 0;
       this.calc.openings.forEach((opening) => {
         if (opening.type != "center") lrAmount += opening.doors * 2 - 2;
         else {
           cAmount += opening.doors * 2 - 4;
-          onlyCentalAmount++;
+          onlyCentralAmount++;
         }
         // else cAmount++;
+      });
+
+      let tempCentral = 0,
+        tempLeft = 0,
+        tempRight = 0;
+      this.calc.openings.forEach((o) => {
+        if (o.type == "center") {
+          tempCentral += o.doors;
+        } else if (o.type == "right") {
+          tempRight += o.doors;
+        } else if (o.type == "left") {
+          tempLeft += o.doors;
+        }
       });
 
       this.materials[this.material_type == "aluminium" ? 0 : 2].amount = parseInt(
         lrAmount + cAmount
       );
       this.materials[this.material_type == "aluminium" ? 1 : 3].amount = parseInt(
-        this.material_type == "aluminium" ? onlyCentalAmount : onlyCentalAmount * 2
+        this.material_type == "aluminium" ? onlyCentralAmount : onlyCentralAmount * 2
       );
 
       this.materials.forEach((material) => {
@@ -213,6 +236,46 @@ export default {
             break;
           case "L14":
             autoProfile.amount = this.autoProfiles[0].amount * 2;
+            break;
+          case "L15":
+            autoProfile.amount =
+              (tempCentral != 0 ? tempCentral / 2 - 1 : 0) +
+              (tempRight != 0 ? tempRight - 1 : 0);
+            break;
+          case "L16":
+            autoProfile.amount =
+              (tempCentral != 0 ? tempCentral / 2 - 1 : 0) +
+              (tempLeft != 0 ? 1 : 0) +
+              tempRight;
+            break;
+          case "L17":
+            autoProfile.amount = tempCentral != 0 ? 1 : 0;
+            break;
+          case "L18":
+            autoProfile.amount =
+              (tempLeft != 0 ? tempLeft - 1 : 0) +
+              (tempCentral != 0 ? tempCentral / 2 - 1 : 0);
+            break;
+          case "L19":
+            autoProfile.amount =
+              (tempLeft != 0 ? tempLeft : 0) +
+              (tempRight != 0 ? 1 : 0) +
+              (tempCentral != 0 ? tempCentral / 2 - 1 : 0);
+            break;
+          case "L20":
+            autoProfile.amount = tempCentral != 0 ? 1 : 0;
+            break;
+          case "L21":
+            autoProfile.amount =
+              (tempCentral != 0 ? tempCentral - 2 : 0) +
+              (tempLeft != 0 ? tempLeft - 1 : 0) +
+              (tempRight != 0 ? tempRight - 1 : 0);
+            break;
+          case "L22":
+            autoProfile.amount =
+              (tempCentral != 0 ? tempCentral - 4 : 0) +
+              (tempLeft != 0 ? tempLeft - 2 : 0) +
+              (tempRight != 0 ? tempRight - 2 : 0);
             break;
           default:
             break;
@@ -362,7 +425,7 @@ export default {
 
           if (this.sendMessage(response.data.order_id)) {
             setTimeout(() => {
-              // window.location.reload();
+              window.location.reload();
             }, 1000);
           }
         } else {
@@ -382,7 +445,7 @@ export default {
 <u>Комментарий:</u> <i>${this.comment}</i>
 <u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>
 \n
-<a href='https://llymar.ru/generate-pdf/${this.user_id}/${order_id}'>Ссылка на PDF</a>`;
+<a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
       console.log("sending");
       try {
         await axios.post(
