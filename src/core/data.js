@@ -203,6 +203,15 @@ export let autoProfiles = [
         amount: 0,
         total: 0
     },
+    {
+        vendor_code: 'L1010',
+        name: 'Ролик',
+        img: 'https://random.imagecdn.app/299/149',
+        price: 39,
+        unit: 'шт.',
+        amount: 0,
+        total: 0
+    },
 ];
 export let totals = {
     totalPrice: 0,

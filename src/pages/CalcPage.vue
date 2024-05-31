@@ -80,12 +80,18 @@ export default {
     };
     this.vendors.forEach((vendor) => {
       if (vendor.vendor_code <= 5) {
-        this.profiles[`L${vendor.vendor_code}`]["img"] = STORAGE_LINK + vendor.img;
+        this.profiles[`L${vendor.vendor_code}`] = {
+          img: STORAGE_LINK + vendor.img,
+          price: parseInt(vendor.price),
+          name: vendor.name,
+          unit: vendor.unit,
+          amount: 0,
+          total: 0,
+        };
       } else if (
         vendor.vendor_code == 6 ||
         (vendor.vendor_code >= 12 && vendor.vendor_code <= 22)
       ) {
-        // console.log(`L${vendor.vendor_code} - ${vendor.name}`);
         this.autoProfiles[temp_indexes[`L${vendor.vendor_code}`]] = {
           vendor_code: `L${vendor.vendor_code}`,
           name: vendor.name,
@@ -95,7 +101,6 @@ export default {
           amount: 0,
           total: 0,
         };
-        console.log(this.autoProfiles[temp_indexes[`L${vendor.vendor_code}`]]);
       }
     });
 
@@ -107,7 +112,8 @@ export default {
           name: item.name,
           img: STORAGE_LINK + item.img,
           type: item.type,
-          price: item.price,
+          unit: item.unit,
+          price: parseInt(item.price),
           amount: 0,
           total: 0,
         });
@@ -232,7 +238,8 @@ export default {
             break;
           case "L13":
             autoProfile.amount =
-              this.materials[0].amount * 3 + parseInt(this.profiles["L5"].amount) * 2;
+              (this.material_type == "aluminium" ? this.materials[0].amount * 3 : 0) +
+              parseInt(this.profiles["L5"].amount) * 2;
             break;
           case "L14":
             autoProfile.amount = this.autoProfiles[0].amount * 2;
@@ -276,6 +283,9 @@ export default {
               (tempCentral != 0 ? tempCentral - 4 : 0) +
               (tempLeft != 0 ? tempLeft - 2 : 0) +
               (tempRight != 0 ? tempRight - 2 : 0);
+            break;
+          case "L1010":
+            autoProfile.amount = (tempLeft + tempCentral + tempRight) * 2;
             break;
           default:
             break;
@@ -446,7 +456,6 @@ export default {
 <u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>
 \n
 <a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
-      console.log("sending");
       try {
         await axios.post(
           `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
@@ -458,13 +467,12 @@ export default {
         );
         return true;
       } catch (error) {
-        console.error("Error sending message:", error);
         alert("Failed to send message. Please try again later.");
       }
     },
-    // printOrder() {
-    //   print();
-    // },
+    printOrder() {
+      print();
+    },
     toast(bln) {
       if (bln == 401) {
         this.showAuthError = true;
@@ -519,7 +527,7 @@ export default {
                 <th scope="row" class="px-6 py-4">
                   <img
                     :src="opening_images[opening.type]"
-                    class="rounded-xl min-w-48 max-w-60"
+                    class="rounded-xl max-w-20 md:max-w-60"
                   />
                 </th>
                 <td class="px-6 py-4 text-base font-semibold text-black">
@@ -534,10 +542,25 @@ export default {
                   </select>
                 </td>
                 <td class="px-6 py-4">
-                  <div class="text-center font-bold text-black">{{ opening.doors }}</div>
                   <!-- <InputTag type="number" v-model="calc.openings[index].doors" @change="calculatePrice()" class="text-center"/> -->
-                  <div v-if="opening.type != 'center'" class="relative mb-6 print:hidden">
-                    <input
+                  <div class="relative print:hidden">
+                    <select
+                      v-model="calc.openings[index].doors"
+                      @change="calculatePrice()"
+                      class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                    >
+                      <option
+                        v-if="opening.type != 'center'"
+                        v-for="i in [2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                        :value="i"
+                      >
+                        {{ i }}
+                      </option>
+                      <option v-else v-for="i in [4, 6, 8, 10, 12]" :value="i">
+                        {{ i }}
+                      </option>
+                    </select>
+                    <!-- <input
                       type="range"
                       v-model="calc.openings[index].doors"
                       @change="calculatePrice()"
@@ -550,24 +573,7 @@ export default {
                       class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6"
                       >6</span
                     >
-                    <span class="text-sm text-black absolute end-0 -bottom-6">10</span>
-                  </div>
-                  <div v-else class="relative mb-6 print:hidden">
-                    <input
-                      type="range"
-                      v-model="calc.openings[index].doors"
-                      @change="calculatePrice()"
-                      min="4"
-                      max="12"
-                      step="2"
-                      class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-                    />
-                    <span class="text-sm text-black absolute start-0 -bottom-6">4</span>
-                    <span
-                      class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6"
-                      >8</span
-                    >
-                    <span class="text-sm text-black absolute end-0 -bottom-6">12</span>
+                    <span class="text-sm text-black absolute end-0 -bottom-6">10</span> -->
                   </div>
                 </td>
                 <td class="px-6 py-4">
@@ -689,7 +695,7 @@ export default {
                   class="bg-white border-b hover:bg-gray-50"
                 >
                   <th scope="row" class="px-6 py-4">
-                    <img :src="material.img" class="rounded-xl min-w-48 max-w-60" />
+                    <img :src="material.img" class="rounded-xl max-w-20 md:max-w-60" />
                   </th>
                   <td class="px-6 py-4 text-black">
                     {{ material.vendor_code }}
@@ -730,7 +736,10 @@ export default {
               <tbody>
                 <tr class="bg-white border-b hover:bg-gray-50">
                   <th scope="row" class="px-6 py-4">
-                    <img :src="profiles['L1'].img" class="rounded-xl min-w-48 max-w-60" />
+                    <img
+                      :src="profiles['L1'].img"
+                      class="rounded-xl max-w-20 md:max-w-60"
+                    />
                   </th>
                   <td class="px-6 py-4 text-black">L1</td>
                   <td class="px-6 py-4 font-semibold text-black">
@@ -741,11 +750,20 @@ export default {
                     {{ profiles["L1"].unit }}
                   </td>
                   <td class="px-6 py-4">
-                    <div class="text-center font-bold text-black">
+                    <!-- <div class="text-center font-bold text-black">
                       {{ profiles["L1"].amount }}
-                    </div>
+                    </div> -->
                     <div class="relative mb-6 print:hidden">
-                      <input
+                      <select
+                        v-model="profiles['L1'].amount"
+                        @change="calculatePrice()"
+                        class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                      >
+                        <option v-for="i in [0, 3, 6, 9, 12, 15, 18, 21, 24]" :value="i">
+                          {{ i }}
+                        </option>
+                      </select>
+                      <!-- <input
                         type="range"
                         v-model="profiles['L1'].amount"
                         @change="calculatePrice()"
@@ -759,14 +777,17 @@ export default {
                         class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6"
                         >12</span
                       >
-                      <span class="text-sm text-black absolute end-0 -bottom-6">24</span>
+                      <span class="text-sm text-black absolute end-0 -bottom-6">24</span> -->
                     </div>
                   </td>
                   <td class="px-6 py-4 font-semibold">{{ profiles["L1"].total }}₽</td>
                 </tr>
                 <tr class="bg-white border-b hover:bg-gray-50">
                   <th scope="row" class="px-6 py-4">
-                    <img :src="profiles['L2'].img" class="rounded-xl min-w-48 max-w-60" />
+                    <img
+                      :src="profiles['L2'].img"
+                      class="rounded-xl max-w-20 md:max-w-60"
+                    />
                   </th>
                   <td class="px-6 py-4 text-black">L2</td>
                   <td class="px-6 py-4 font-semibold text-black">
@@ -786,7 +807,10 @@ export default {
 
                 <tr class="bg-white border-b hover:bg-gray-50">
                   <th scope="row" class="px-6 py-4">
-                    <img :src="profiles['L3'].img" class="rounded-xl min-w-48 max-w-60" />
+                    <img
+                      :src="profiles['L3'].img"
+                      class="rounded-xl max-w-20 md:max-w-60"
+                    />
                   </th>
                   <td class="px-6 py-4 text-black">L3</td>
                   <td class="px-6 py-4 font-semibold text-black">
@@ -797,11 +821,20 @@ export default {
                     {{ profiles["L3"].unit }}
                   </td>
                   <td class="px-6 py-4">
-                    <div class="text-center font-bold text-black">
+                    <!-- <div class="text-center font-bold text-black">
                       {{ profiles["L3"].amount }}
-                    </div>
+                    </div> -->
                     <div class="relative mb-6 print:hidden">
-                      <input
+                      <select
+                        v-model="profiles['L3'].amount"
+                        @change="calculatePrice()"
+                        class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                      >
+                        <option v-for="i in [0, 3, 6, 9, 12, 15, 18, 21, 24]" :value="i">
+                          {{ i }}
+                        </option>
+                      </select>
+                      <!-- <input
                         type="range"
                         v-model="profiles['L3'].amount"
                         @change="calculatePrice()"
@@ -815,14 +848,17 @@ export default {
                         class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6"
                         >12</span
                       >
-                      <span class="text-sm text-black absolute end-0 -bottom-6">24</span>
+                      <span class="text-sm text-black absolute end-0 -bottom-6">24</span> -->
                     </div>
                   </td>
                   <td class="px-6 py-4 font-semibold">{{ profiles["L3"].total }}₽</td>
                 </tr>
                 <tr class="bg-white border-b hover:bg-gray-50">
                   <th scope="row" class="px-6 py-4">
-                    <img :src="profiles['L4'].img" class="rounded-xl min-w-48 max-w-60" />
+                    <img
+                      :src="profiles['L4'].img"
+                      class="rounded-xl max-w-20 md:max-w-60"
+                    />
                   </th>
                   <td class="px-6 py-4 text-black">L4</td>
                   <td class="px-6 py-4 font-semibold text-black">
@@ -842,7 +878,10 @@ export default {
 
                 <tr class="bg-white border-b hover:bg-gray-50">
                   <th scope="row" class="px-6 py-4">
-                    <img :src="profiles['L5'].img" class="rounded-xl min-w-48 max-w-60" />
+                    <img
+                      :src="profiles['L5'].img"
+                      class="rounded-xl max-w-20 md:max-w-60"
+                    />
                   </th>
                   <td class="px-6 py-4 text-black">L5</td>
                   <td class="px-6 py-4 font-semibold text-black">
@@ -853,11 +892,20 @@ export default {
                     {{ profiles["L5"].unit }}
                   </td>
                   <td class="px-6 py-4">
-                    <div class="text-center font-bold text-black">
+                    <!-- <div class="text-center font-bold text-black">
                       {{ profiles["L5"].amount }}
-                    </div>
+                    </div> -->
                     <div class="relative mb-6 print:hidden">
-                      <input
+                      <select
+                        v-model="profiles['L5'].amount"
+                        @change="calculatePrice()"
+                        class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                      >
+                        <option v-for="i in [0, 3, 6, 9, 12, 15, 18, 21, 24]" :value="i">
+                          {{ i }}
+                        </option>
+                      </select>
+                      <!-- <input
                         type="range"
                         v-model="profiles['L5'].amount"
                         @change="calculatePrice()"
@@ -871,7 +919,7 @@ export default {
                         class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6"
                         >12</span
                       >
-                      <span class="text-sm text-black absolute end-0 -bottom-6">24</span>
+                      <span class="text-sm text-black absolute end-0 -bottom-6">24</span> -->
                     </div>
                   </td>
                   <td class="px-6 py-4 font-semibold">{{ profiles["L5"].total }}₽</td>
@@ -904,7 +952,7 @@ export default {
                   class="bg-white border-b hover:bg-gray-50"
                 >
                   <th scope="row" class="px-6 py-4">
-                    <img :src="autoProfile.img" class="rounded-xl min-w-48 max-w-60" />
+                    <img :src="autoProfile.img" class="rounded-xl max-w-20 md:max-w-60" />
                   </th>
                   <td class="px-6 py-4 text-black">
                     {{ autoProfile.vendor_code }}
@@ -952,7 +1000,7 @@ export default {
                 >
                   <td class="px-6 py-4 text-black">L{{ item.vendor_code }}</td>
                   <td class="px-6 py-4">
-                    <img :src="item.img" class="rounded-xl min-w-48 max-w-60" />
+                    <img :src="item.img" class="rounded-xl max-w-20 md:max-w-60" />
                   </td>
                   <td class="px-6 py-4 font-semibold text-black">
                     {{ item.name }}
@@ -962,9 +1010,47 @@ export default {
                     {{ item.unit }}
                   </td>
                   <td class="px-6 py-4 font-semibold">
-                    <div class="text-center font-bold text-black">{{ item.amount }}</div>
+                    <!-- <div class="text-center font-bold text-black">{{ item.amount }}</div> -->
                     <div class="relative mb-6 print:hidden">
-                      <input
+                      <select
+                        v-model="item.amount"
+                        @change="calculatePrice()"
+                        class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                      >
+                        <option
+                          v-for="i in [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                          ]"
+                          :value="i"
+                        >
+                          {{ i }}
+                        </option>
+                      </select>
+                      <!-- <input
                         type="range"
                         v-model="item.amount"
                         @change="calculatePrice()"
@@ -977,7 +1063,7 @@ export default {
                         class="text-sm text-black absolute start-1/2 -translate-x-1/2 -bottom-6"
                         >12</span
                       >
-                      <span class="text-sm text-black absolute end-0 -bottom-6">24</span>
+                      <span class="text-sm text-black absolute end-0 -bottom-6">24</span> -->
                     </div>
                   </td>
                   <td class="px-6 py-4 font-semibold">{{ item.total }}₽</td>
@@ -1054,12 +1140,12 @@ export default {
           class="inline-flex flex-col items-center justify-center px-5 rounded-r-full hover:bg-gray-50 dark:hover:bg-gray-800 group"
         >
           <button
+            @click="printOrder()"
             data-tooltip-target="tooltip-profile"
             type="button"
             class="inline-flex flex-col items-center justify-center px-5 rounded-e-full group"
           >
             <svg
-              @click="printOrder()"
               class="w-5 h-5 text-black dark:text-white"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
@@ -1284,3 +1370,9 @@ export default {
     </div>
   </div>
 </template>
+
+<style scoped>
+img.rounded-xl {
+  max-height: 120px;
+}
+</style>
