@@ -77,6 +77,7 @@ export default {
       L20: 9,
       L21: 10,
       L22: 11,
+      L26: 12,
     };
     this.vendors.forEach((vendor) => {
       if (vendor.vendor_code <= 5) {
@@ -85,12 +86,14 @@ export default {
           price: parseInt(vendor.price),
           name: vendor.name,
           unit: vendor.unit,
+          discount: vendor.discount || this.discount,
           amount: 0,
           total: 0,
         };
       } else if (
         vendor.vendor_code == 6 ||
-        (vendor.vendor_code >= 12 && vendor.vendor_code <= 22)
+        (vendor.vendor_code >= 12 && vendor.vendor_code <= 22) ||
+        vendor.vendor_code == 26
       ) {
         this.autoProfiles[temp_indexes[`L${vendor.vendor_code}`]] = {
           vendor_code: `L${vendor.vendor_code}`,
@@ -98,6 +101,7 @@ export default {
           img: STORAGE_LINK + vendor.img,
           price: vendor.price,
           unit: vendor.unit,
+          discount: vendor.discount || this.discount,
           amount: 0,
           total: 0,
         };
@@ -106,7 +110,7 @@ export default {
 
     let temp = await materials();
     temp.forEach((item) => {
-      if (item.type != null) {
+      if (item.type != null && this.materials.length != 4) {
         this.materials.push({
           vendor_code: `L${item.vendor_code}`,
           name: item.name,
@@ -114,6 +118,7 @@ export default {
           type: item.type,
           unit: item.unit,
           price: parseInt(item.price),
+          discount: item.discount || this.discount,
           amount: 0,
           total: 0,
         });
@@ -203,18 +208,53 @@ export default {
       );
 
       this.materials.forEach((material) => {
-        material.total = material.amount * material.price;
+        material.total = parseInt(
+          material.amount *
+            material.price *
+            (material.discount ? 1 - material.discount / 100 : this.discount)
+        );
       });
 
-      this.profiles["L1"].total = this.profiles["L1"].amount * this.profiles["L1"].price;
-      this.profiles["L3"].total = this.profiles["L3"].amount * this.profiles["L3"].price;
+      this.profiles["L1"].total =
+        this.profiles["L1"].amount *
+        this.profiles["L1"].price *
+        (this.profiles["L1"].discount
+          ? 1 - this.profiles["L1"].discount / 100
+          : this.discount);
+      this.profiles["L3"].total =
+        this.profiles["L3"].amount *
+        this.profiles["L3"].price *
+        (this.profiles["L3"].discount
+          ? 1 - this.profiles["L3"].discount / 100
+          : this.discount);
 
       this.profiles["L2"].amount = this.profiles["L1"].amount;
-      this.profiles["L2"].total = this.profiles["L2"].amount * this.profiles["L2"].price;
+      this.profiles["L2"].total =
+        this.profiles["L2"].amount *
+        this.profiles["L2"].price *
+        (this.profiles["L2"].discount
+          ? 1 - this.profiles["L2"].discount / 100
+          : this.discount);
       this.profiles["L4"].amount = this.profiles["L3"].amount;
-      this.profiles["L4"].total = this.profiles["L4"].amount * this.profiles["L4"].price;
+      this.profiles["L4"].total =
+        this.profiles["L4"].amount *
+        this.profiles["L4"].price *
+        (this.profiles["L4"].discount
+          ? 1 - this.profiles["L4"].discount / 100
+          : this.discount);
 
-      this.profiles["L5"].total = this.profiles["L5"].amount * this.profiles["L5"].price;
+      this.profiles["L5"].total =
+        this.profiles["L5"].amount *
+        this.profiles["L5"].price *
+        (this.profiles["L5"].discount
+          ? 1 - this.profiles["L5"].discount / 100
+          : this.discount);
+
+      this.profiles["L1"].total = parseInt(this.profiles["L1"].total);
+      this.profiles["L2"].total = parseInt(this.profiles["L2"].total);
+      this.profiles["L3"].total = parseInt(this.profiles["L3"].total);
+      this.profiles["L4"].total = parseInt(this.profiles["L4"].total);
+      this.profiles["L5"].total = parseInt(this.profiles["L5"].total);
 
       this.autoProfiles.forEach((autoProfile) => {
         autoProfile.amount = 0;
@@ -284,17 +324,25 @@ export default {
               (tempLeft != 0 ? tempLeft - 2 : 0) +
               (tempRight != 0 ? tempRight - 2 : 0);
             break;
-          case "L1010":
+          case "L26":
             autoProfile.amount = (tempLeft + tempCentral + tempRight) * 2;
             break;
           default:
             break;
         }
-        autoProfile.total = autoProfile.amount * autoProfile.price;
+        autoProfile.total = parseInt(
+          autoProfile.amount *
+            autoProfile.price *
+            (autoProfile.discount ? 1 - autoProfile.discount / 100 : 1)
+        );
       });
 
       this.additionals.forEach((item) => {
-        item.total = item.amount * item.price;
+        item.total = parseInt(
+          item.amount *
+            item.price *
+            (item.discount ? 1 - item.discount / 100 : this.discount)
+        );
       });
     },
     calculatePrice() {
@@ -318,14 +366,14 @@ export default {
         this.totals.totalPrice += parseInt(add.total);
       });
 
-      this.totals.totalPrice = (this.totals.totalPrice * (100 - this.discount)) / 100;
+      // this.totals.totalPrice = (this.totals.totalPrice * (100 - this.discount)) / 100;
 
       this.collectTotals();
     },
     async getUserName() {
       const response = await getUser();
       this.username = response.name.split(" ")[1];
-      this.discount = response.discount;
+      this.discount = (100 - response.discount) / 100;
       this.user_id = response.id;
     },
     clearFields() {
@@ -362,6 +410,7 @@ export default {
             type: material.type,
             amount: parseInt(material.amount),
             price: material.price,
+            discount: material.discount,
           };
         }
       });
@@ -374,6 +423,7 @@ export default {
             type: undefined,
             amount: profile.amount,
             price: profile.price,
+            discount: profile.discount,
           };
         }
         // profile.parseInt(v_code.replace(/\D/g,''));
@@ -386,6 +436,7 @@ export default {
             type: undefined,
             amount: autoProfile.amount,
             price: autoProfile.price,
+            discount: autoProfile.discount,
           };
         }
       });
@@ -400,18 +451,42 @@ export default {
             type: additional.type,
             amount: additional.amount,
             price: additional.price,
+            discount: additional.discount,
           });
         }
       });
 
       this.totals.comment = this.comment;
+      console.log(this.totals);
+    },
+    noDiscountPrice() {
+      let tempTotals = 0;
+
+      this.materials.forEach((material) => {
+        tempTotals += material.price * material.amount;
+      });
+
+      for (let v_code in this.profiles) {
+        let profile = this.profiles[v_code];
+        tempTotals += profile.price * profile.amount;
+      }
+
+      this.additionals.forEach((additional) => {
+        tempTotals += additional.price * additional.amount;
+      });
+
+      this.autoProfiles.forEach((autoProfile) => {
+        tempTotals += autoProfile.price * autoProfile.amount;
+      });
+
+      return tempTotals;
     },
     async sendTotals() {
       try {
         let tempPrice =
           this.discount != 0
             ? parseInt((this.totals.totalPrice * (100 - this.discount)) / 100)
-            : this.totals.totalPrice;
+            : parseInt(this.totals.totalPrice * this.discount);
         const response = await axios.post(
           API_BASE_URL + "/order",
           {
@@ -446,29 +521,29 @@ export default {
       }
     },
     async sendMessage(order_id) {
-      const message = `
-<b>Новый расчет №${order_id}</b>
-\n
-<u>Тип профиля:</u> <code>${
-        this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"
-      }</code>
-<u>Комментарий:</u> <i>${this.comment}</i>
-<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>
-\n
-<a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
-      try {
-        await axios.post(
-          `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
-          {
-            chat_id: this.chatId,
-            text: message,
-            parse_mode: "HTML",
-          }
-        );
-        return true;
-      } catch (error) {
-        alert("Failed to send message. Please try again later.");
-      }
+      //       const message = `
+      // <b>Новый расчет №${order_id}</b>
+      // \n
+      // <u>Тип профиля:</u> <code>${
+      //         this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"
+      //       }</code>
+      // <u>Комментарий:</u> <i>${this.comment}</i>
+      // <u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>
+      // \n
+      // <a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
+      //       try {
+      //         await axios.post(
+      //           `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
+      //           {
+      //             chat_id: this.chatId,
+      //             text: message,
+      //             parse_mode: "HTML",
+      //           }
+      //         );
+      //         return true;
+      //       } catch (error) {
+      //         alert("Failed to send message. Please try again later.");
+      //       }
     },
     printOrder() {
       print();
@@ -1094,7 +1169,7 @@ export default {
         <div
           class="inline-flex flex-col items-center justify-center text-center px-5 rounded-s-full hover:bg-gray-50 dark:hover:bg-gray-800 group"
         >
-          <span class="line-through block text-sm">{{ totals.totalPrice }} ₽</span>
+          <span class="line-through block text-sm">{{ noDiscountPrice() }} ₽</span>
           <span
             ><b
               >{{

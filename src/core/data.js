@@ -204,7 +204,7 @@ export let autoProfiles = [
         total: 0
     },
     {
-        vendor_code: 'L1010',
+        vendor_code: 'L26',
         name: 'Ролик',
         img: 'https://random.imagecdn.app/299/149',
         price: 39,

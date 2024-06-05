@@ -1,7 +1,7 @@
 <script>
 import axios from "axios";
 import { API_BASE_URL, STORAGE_LINK } from "../core/config";
-import { opening_images } from "../core/data";
+import { additionals, opening_images } from "../core/data";
 import ButtonLink from "../components/ButtonLink.vue";
 
 export default {
@@ -274,7 +274,14 @@ export default {
           <td>L{{ vendor.vendor_code_id }}</td>
           <td>{{ vendor.price }}</td>
           <td>{{ vendor.amount }}</td>
-          <td>{{ vendor.price * vendor.amount }} ₽</td>
+          <td>
+            {{
+              vendor.price *
+              vendor.amount *
+              (vendor.discount ? 1 - vendors[index].discount / 100 : user.discount / 100)
+            }}
+            ₽
+          </td>
         </tr>
         <tr
           v-if="additionals.length != 0"
@@ -290,7 +297,14 @@ export default {
           <td>L{{ item.item_id }}</td>
           <td>{{ item.price }}</td>
           <td>{{ item.amount }}</td>
-          <td>{{ item.price * item.amount }} ₽</td>
+          <td>
+            {{
+              item.price *
+              item.amount *
+              (item.discount ? 1 - items[index].discount / 100 : user.discount / 100)
+            }}
+            ₽
+          </td>
         </tr>
       </tbody>
     </table>
