@@ -306,7 +306,9 @@ export default {
               parseInt(
                 item.price *
                   item.amount *
-                  (item.discount ? 1 - items[index].discount / 100 : user.discount / 100)
+                  (item.discount
+                    ? 1 - additionals[index].discount / 100
+                    : user.discount / 100)
               )
             }}
             ₽
