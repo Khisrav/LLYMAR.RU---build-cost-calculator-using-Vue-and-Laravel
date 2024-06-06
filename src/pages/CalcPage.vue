@@ -521,29 +521,29 @@ export default {
       }
     },
     async sendMessage(order_id) {
-      //       const message = `
-      // <b>Новый расчет №${order_id}</b>
-      // \n
-      // <u>Тип профиля:</u> <code>${
-      //         this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"
-      //       }</code>
-      // <u>Комментарий:</u> <i>${this.comment}</i>
-      // <u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>
-      // \n
-      // <a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
-      //       try {
-      //         await axios.post(
-      //           `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
-      //           {
-      //             chat_id: this.chatId,
-      //             text: message,
-      //             parse_mode: "HTML",
-      //           }
-      //         );
-      //         return true;
-      //       } catch (error) {
-      //         alert("Failed to send message. Please try again later.");
-      //       }
+            const message = `
+<b>Новый расчет №${order_id}</b>
+\n
+<u>Тип профиля:</u> <code>${
+        this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"
+      }</code>
+<u>Комментарий:</u> <i>${this.comment}</i>
+<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>
+\n
+<a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
+            try {
+              await axios.post(
+                `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
+                {
+                  chat_id: this.chatId,
+                  text: message,
+                  parse_mode: "HTML",
+                }
+              );
+              return true;
+            } catch (error) {
+              alert("Failed to send message. Please try again later.");
+            }
     },
     printOrder() {
       print();
