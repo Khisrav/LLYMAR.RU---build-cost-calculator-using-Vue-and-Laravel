@@ -276,9 +276,13 @@ export default {
           <td>{{ vendor.amount }}</td>
           <td>
             {{
-              vendor.price *
-              vendor.amount *
-              (vendor.discount ? 1 - vendors[index].discount / 100 : user.discount / 100)
+              parseInt(
+                vendor.price *
+                  vendor.amount *
+                  (vendor.discount
+                    ? 1 - vendorsAmount[index].discount / 100
+                    : user.discount / 100)
+              )
             }}
             ₽
           </td>
@@ -299,9 +303,11 @@ export default {
           <td>{{ item.amount }}</td>
           <td>
             {{
-              item.price *
-              item.amount *
-              (item.discount ? 1 - items[index].discount / 100 : user.discount / 100)
+              parseInt(
+                item.price *
+                  item.amount *
+                  (item.discount ? 1 - items[index].discount / 100 : user.discount / 100)
+              )
             }}
             ₽
           </td>
