@@ -483,10 +483,7 @@ export default {
     },
     async sendTotals() {
       try {
-        let tempPrice =
-          this.discount != 0
-            ? parseInt((this.totals.totalPrice * (100 - this.discount)) / 100)
-            : parseInt(this.totals.totalPrice * this.discount);
+        let tempPrice = this.totals.totalPrice;
         const response = await axios.post(
           API_BASE_URL + "/order",
           {
@@ -521,7 +518,7 @@ export default {
       }
     },
     async sendMessage(order_id) {
-            const message = `
+      const message = `
 <b>Новый расчет №${order_id}</b>
 \n
 <u>Тип профиля:</u> <code>${
@@ -531,19 +528,19 @@ export default {
 <u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>
 \n
 <a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
-            try {
-              await axios.post(
-                `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
-                {
-                  chat_id: this.chatId,
-                  text: message,
-                  parse_mode: "HTML",
-                }
-              );
-              return true;
-            } catch (error) {
-              alert("Failed to send message. Please try again later.");
-            }
+      try {
+        await axios.post(
+          `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
+          {
+            chat_id: this.chatId,
+            text: message,
+            parse_mode: "HTML",
+          }
+        );
+        return true;
+      } catch (error) {
+        alert("Failed to send message. Please try again later.");
+      }
     },
     printOrder() {
       print();

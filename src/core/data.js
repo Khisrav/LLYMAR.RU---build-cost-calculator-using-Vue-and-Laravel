@@ -43,6 +43,30 @@ export let calc = {
     ]
 };
 
+export const openings = [
+    {
+        type: 'left', // center or right
+        name: 'Левый проем',
+        doors: 2,
+        width: 3000,
+        height: 2700
+    },
+    {
+        type: 'right',
+        name: 'Правый проем',
+        doors: 2,
+        width: 3000,
+        height: 2700
+    },
+    {
+        type: 'center', 
+        name: 'Центральный проем',
+        doors: 4,
+        width: 3000,
+        height: 2700
+    },
+];
+
 export let material_type = 'aluminium';
 
 export let materials = async () => {
@@ -216,3 +240,7 @@ export let autoProfiles = [
 export let totals = {
     totalPrice: 0,
 };
+
+export const discountRate = (discount) => {
+    return 1 - discount / 100;
+}

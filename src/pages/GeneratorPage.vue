@@ -39,11 +39,13 @@ export default {
         this.vendors = response.data.vendors;
         this.items = response.data.items;
 
+        let isPrinted = false;
         var timeoutRef = setTimeout(() => {
           var intervalRef = setInterval(() => {
             this.checkImages((allLoaded) => {
               if (allLoaded) {
                 print();
+                isPrinted = true;
                 clearInterval(intervalRef); // Clear the interval
                 clearTimeout(timeoutRef); // Clear the timeout
               }
