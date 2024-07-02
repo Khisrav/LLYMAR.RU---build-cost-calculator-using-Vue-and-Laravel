@@ -5,15 +5,15 @@ import { checkAuth } from '../core/auth';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/test',
-      name: 'test',
-      component: () => import('../pages/TestPage.vue'),
-      meta: {
-        requiresAuth: false,
-        title: 'LLYMAR.RU'
-      }
-    },
+    // {
+    //   path: '/test',
+    //   name: 'test',
+    //   component: () => import('../pages/TestPage.vue'),
+    //   meta: {
+    //     requiresAuth: false,
+    //     title: 'LLYMAR.RU'
+    //   }
+    // },
     {
       path: '/',
       name: 'home',
@@ -102,10 +102,8 @@ router.beforeEach(async (to, from, next) => {
   document.title = to.meta.title || DEFAULT_TITLE; 
   const chk = await checkAuth();
   if (to.meta.requiresAuth && !sessionStorage.getItem('token') && !chk) {
-    // Redirect to the login page if not authenticated
     next('/login');
   } else { 
-    // Continue to the requested route
     next();
   }
 });

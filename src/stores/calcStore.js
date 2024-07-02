@@ -82,8 +82,6 @@ export const useCalcStore = defineStore('calcStore', {
 
             this.vendors.forEach(vendor => {
                 if (vendor.vendor_code <= 5) {
-                    console.log('DISCOUNT-RATE:', discountRate(vendor.discount || this.discount));
-                    console.log(`L${vendor.vendor_code} discount | user discount: ${vendor.discount} | ${this.discount}`);
                     this.profiles[`L${vendor.vendor_code}`] = {};
                     this.profiles[`L${vendor.vendor_code}`] = {
                         img: STORAGE_LINK + vendor.img,
@@ -388,7 +386,6 @@ export const useCalcStore = defineStore('calcStore', {
             this.collectTotals();
 
             try {
-                console.log('sending...');
                 const response = await axios.post(
                     API_BASE_URL + "/order",
                     {
@@ -424,7 +421,7 @@ export const useCalcStore = defineStore('calcStore', {
         },
 
         async sendMessage(order_id) {
-            const message = `<b>Новый расчет №${order_id}</b>\n\n<u>Тип профиля:</u> <code>${this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"}</code>\n<u>Комментарий:</u> <i>${this.comment}</i>\n<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>\n<a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
+            const message = `<b>Новый расчет №${order_id}</b>\n\n<u>Тип профиля:</u> <code>${this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"}</code>\n<u>Комментарий:</u> <i>${this.comment}</i>\n<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>\n\n<a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
             try {
                 await axios.post(
                     `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
