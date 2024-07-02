@@ -1,7 +1,6 @@
 <script>
 import { defineComponent, onMounted } from "vue";
 import { useCalcStore } from "../stores/calcStore.js";
-import { opening_images } from "../core/data.js";
 
 import ButtonTag from "../components/ButtonTag.vue";
 import InputTag from "../components/InputTag.vue";
@@ -10,6 +9,8 @@ import OpeningsTable from "../components/OpeningsTable.vue";
 import AdditionalsTable from "../components/AdditionalsTable.vue";
 import MaterialsTable from "../components/MaterialsTable.vue";
 import ProfilesTable from "../components/ProfilesTable.vue";
+import AutoProfilesTable from "../components/AutoProfilesTable.vue";
+import SubmitBox from "../components/SubmitBox.vue";
 
 export default defineComponent({
   components: {
@@ -20,6 +21,8 @@ export default defineComponent({
     AdditionalsTable,
     MaterialsTable,
     ProfilesTable,
+    AutoProfilesTable,
+    SubmitBox,
   },
   setup() {
     const calcStore = useCalcStore();
@@ -28,9 +31,7 @@ export default defineComponent({
       await calcStore.fetchVendors();
     });
 
-    return {
-      calcStore,
-    };
+    return { calcStore };
   },
 });
 </script>
@@ -55,11 +56,11 @@ export default defineComponent({
 
       <ProfilesTable />
 
+      <AutoProfilesTable />
+
       <AdditionalsTable />
 
-      <h1 class="font-bold text-xl">
-        {{ calcStore.totalPrice }}
-      </h1>
+      <SubmitBox />
     </main>
   </div>
 </template>

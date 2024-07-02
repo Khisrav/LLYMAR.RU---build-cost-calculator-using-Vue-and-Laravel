@@ -242,5 +242,5 @@ export let totals = {
 };
 
 export const discountRate = (discount) => {
-    return 1 - discount / 100;
+    return parseFloat((1 - discount / 100).toFixed(2));
 }

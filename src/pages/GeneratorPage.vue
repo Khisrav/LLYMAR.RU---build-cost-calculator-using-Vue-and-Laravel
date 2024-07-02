@@ -39,8 +39,8 @@ export default {
         this.vendors = response.data.vendors;
         this.items = response.data.items;
 
-        let isPrinted = false;
         var timeoutRef = setTimeout(() => {
+          let isPrinted = false;
           var intervalRef = setInterval(() => {
             this.checkImages((allLoaded) => {
               if (allLoaded) {
@@ -283,7 +283,7 @@ export default {
                   vendor.amount *
                   (vendor.discount
                     ? 1 - vendorsAmount[index].discount / 100
-                    : user.discount / 100)
+                    : 1 - user.discount / 100)
               )
             }}
             ₽
@@ -310,7 +310,7 @@ export default {
                   item.amount *
                   (item.discount
                     ? 1 - additionals[index].discount / 100
-                    : user.discount / 100)
+                    : 1 - user.discount / 100)
               )
             }}
             ₽

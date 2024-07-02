@@ -426,7 +426,6 @@ export default {
             discount: profile.discount,
           };
         }
-        // profile.parseInt(v_code.replace(/\D/g,''));
       }
       this.autoProfiles.forEach((autoProfile) => {
         let vc = parseInt(autoProfile.vendor_code.replace(/\D/g, ""));
@@ -1148,13 +1147,7 @@ export default {
 
       <h1 class="hidden print:block text-4xl mt-10 mb-10">
         Итого:
-        <b>
-          {{
-            discount != 0
-              ? (totals.totalPrice * (100 - discount)) / 100
-              : totals.totalPrice
-          }}₽</b
-        >
+        <b> {{ totals.totalPrice }}₽</b>
       </h1>
       <div class="my-16"></div>
     </main>

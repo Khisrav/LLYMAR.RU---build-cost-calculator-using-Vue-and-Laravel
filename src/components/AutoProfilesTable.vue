@@ -22,39 +22,29 @@ const calcStore = useCalcStore();
           </thead>
           <tbody>
             <tr
-              v-for="(profile, index) in calcStore.profiles"
+              v-for="(autoProfile, index) in calcStore.autoProfiles"
               :key="index"
               class="bg-white border-b hover:bg-gray-50"
             >
-              <td scope="row" class="px-6 py-4">
-                <img :src="profile.img" class="rounded-xl max-w-20 md:max-w-60" />
+              <th scope="row" class="px-6 py-4">
+                <img :src="autoProfile.img" class="rounded-xl max-w-20 md:max-w-60" />
+              </th>
+              <td class="px-6 py-4 text-black">
+                {{ autoProfile.vendor_code }}
               </td>
-              <td class="px-6 py-4 text-black">{{ index }}</td>
               <td class="px-6 py-4 font-semibold text-black">
-                {{ profile.name }}
+                {{ autoProfile.name }}
               </td>
-              <td class="px-6 py-4 font-semibold">{{ profile.price }}₽</td>
+              <td class="px-6 py-4 font-semibold">{{ autoProfile.price }}₽</td>
               <td class="px-6 py-4">
-                {{ profile.unit }}
+                {{ autoProfile.unit }}
               </td>
               <td class="px-6 py-4">
-                <div class="relative mb-6 print:hidden">
-                  <select
-                    v-if="['L1', 'L3', 'L5'].includes(index)"
-                    v-model="calcStore.profiles[index].amount"
-                    @change="calcStore.calculatePrice()"
-                    class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-                  >
-                    <option v-for="i in [0, 3, 6, 9, 12, 15, 18, 21, 24]" :value="i">
-                      {{ i }}
-                    </option>
-                  </select>
-                  <div v-else class="text-center font-bold text-black">
-                    {{ profile.amount }}
-                  </div>
+                <div class="text-center font-bold text-black">
+                  {{ autoProfile.amount }}
                 </div>
               </td>
-              <td class="px-6 py-4 font-semibold">{{ profile.total }}₽</td>
+              <td class="px-6 py-4 font-semibold">{{ autoProfile.total }}₽</td>
             </tr>
           </tbody>
         </table>
