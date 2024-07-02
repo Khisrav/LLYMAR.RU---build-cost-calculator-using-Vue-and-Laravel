@@ -40,10 +40,12 @@ export default {
         this.items = response.data.items;
 
         var timeoutRef = setTimeout(() => {
+          let isPrinted = false;
           var intervalRef = setInterval(() => {
             this.checkImages((allLoaded) => {
               if (allLoaded) {
                 print();
+                isPrinted = true;
                 clearInterval(intervalRef); // Clear the interval
                 clearTimeout(timeoutRef); // Clear the timeout
               }
@@ -281,7 +283,7 @@ export default {
                   vendor.amount *
                   (vendor.discount
                     ? 1 - vendorsAmount[index].discount / 100
-                    : user.discount / 100)
+                    : 1 - user.discount / 100)
               )
             }}
             ₽
@@ -308,7 +310,7 @@ export default {
                   item.amount *
                   (item.discount
                     ? 1 - additionals[index].discount / 100
-                    : user.discount / 100)
+                    : 1 - user.discount / 100)
               )
             }}
             ₽

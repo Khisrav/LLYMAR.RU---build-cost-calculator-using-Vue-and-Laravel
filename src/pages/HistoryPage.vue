@@ -93,11 +93,11 @@ export default {
   <div class="mx-auto max-w-screen-xl px-4 lg:px-12 lg:py-16">
     <h2 class="mb-4 text-xl font-bold text-gray-900">История расчетов</h2>
 
-    <div class="grid lg:grid-cols-3 gap-4 text-sm">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xs gap-4 text-sm">
       <div
         v-for="(order, index) in orders"
         :key="index"
-        class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
+        class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 mx-auto w-full"
       >
         <div class="mb-2 flex justify-between content-center items-center">
           <h5 class="m-0 text-xl font-bold tracking-tight text-gray-900">
