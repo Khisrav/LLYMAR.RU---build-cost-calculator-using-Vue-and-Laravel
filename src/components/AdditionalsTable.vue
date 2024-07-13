@@ -17,6 +17,7 @@ const calcStore = useCalcStore();
               <th scope="col" class="px-6 py-3">Наименование</th>
               <th scope="col" class="px-6 py-3">Цена за ед.</th>
               <th scope="col" class="px-6 py-3">Ед. изм.</th>
+              <th scope="col" class="px-6 py-3"></th>
               <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Итого</th>
             </tr>
@@ -37,46 +38,32 @@ const calcStore = useCalcStore();
               <td class="px-6 py-4">
                 {{ item.unit }}
               </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center" v-if="item.is_checkable">
+                  <input
+                    :checked="item.checked"
+                    v-model="item.checked"
+                    @change="calcStore.calculatePrice()"
+                    id="checked-checkbox"
+                    type="checkbox"
+                    value=""
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                </div>
+              </td>
               <td class="px-6 py-4 font-semibold">
                 <div class="relative mb-6 print:hidden">
-                  <select
+                  <span v-if="item.is_checkable">
+                    {{ item.amount }}
+                  </span>
+                  <input
+                    v-else
                     v-model="item.amount"
+                    type="number"
+                    min="0"
                     @change="calcStore.calculatePrice()"
                     class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-                  >
-                    <option
-                      v-for="i in [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4,
-                        5,
-                        6,
-                        7,
-                        8,
-                        9,
-                        10,
-                        11,
-                        12,
-                        13,
-                        14,
-                        15,
-                        16,
-                        17,
-                        18,
-                        19,
-                        20,
-                        21,
-                        22,
-                        23,
-                        24,
-                      ]"
-                      :value="i"
-                    >
-                      {{ i }}
-                    </option>
-                  </select>
+                  />
                 </div>
               </td>
               <td class="px-6 py-4 font-semibold">{{ item.total }}₽</td>

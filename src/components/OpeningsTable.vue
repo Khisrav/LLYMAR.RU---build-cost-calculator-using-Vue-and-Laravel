@@ -47,11 +47,17 @@ const calcStore = useCalcStore();
                 <option value="left">Левый проем</option>
                 <option value="right">Правый проем</option>
                 <option value="center">Центральный проем</option>
+                <option value="inner-left">Входная группа левая</option>
+                <option value="inner-right">Входная группа правая</option>
               </select>
             </td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 text-center">
+              <span
+                v-if="opening.type == 'inner-left' || opening.type == 'inner-right'"
+                >{{ opening.doors }}</span
+              >
               <!-- <InputTag type="number" v-model="calc.openings[index].doors" @change="calculatePrice()" class="text-center"/> -->
-              <div class="relative print:hidden">
+              <div v-else class="relative print:hidden flex justify-center">
                 <select
                   v-model="calcStore.openings[index].doors"
                   @change="calcStore.calculatePrice()"
