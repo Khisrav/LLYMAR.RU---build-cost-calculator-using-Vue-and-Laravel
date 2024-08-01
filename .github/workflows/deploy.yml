@@ -30,7 +30,7 @@ jobs:
         server: ftp://g89883cb.beget.tech
         username: ${{ secrets.BEGET_FTP_USERNAME }}
         password: ${{ secrets.BEGET_FTP_PASSWORD }}
-        local-dir: dist
+        local-dir: dist/
         server-dir: /public_html  # Change this to your server directory
 
     # - name: Deploy to Beget via SSH
