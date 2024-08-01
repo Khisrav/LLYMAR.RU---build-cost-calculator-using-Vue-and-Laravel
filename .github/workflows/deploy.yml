@@ -31,7 +31,7 @@ jobs:
         username: ${{ secrets.BEGET_FTP_USERNAME }}
         password: ${{ secrets.BEGET_FTP_PASSWORD }}
         local-dir: dist/
-        server-dir: /public_html  # Change this to your server directory
+        server-dir: public_html/  # Change this to your server directory
 
     # - name: Deploy to Beget via SSH
     #   uses: appleboy/ssh-action@master
