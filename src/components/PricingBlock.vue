@@ -23,7 +23,7 @@ const customDiscount = ref(0);
         <span class="float-right font-semibold">{{ calcStore.noDiscountPrice() }} ₽</span>
       </p>
       <p class="fonta-normal text-gray-700 mt-3">
-        Ваш % скидки:
+        Ваша наценка:
         <span class="float-right font-semibold">{{ customDiscount }}%</span>
       </p>
       <div class="relative mb-6">
@@ -49,10 +49,10 @@ const customDiscount = ref(0);
         >
       </div>
       <p class="fonta-normal text-gray-700 mt-3">
-        Цена со скидкой {{ customDiscount }}%:
+        Цена с наценкой <b>{{ customDiscount }}%</b>:
         <span class="float-right font-semibold"
           >{{
-            parseInt((1 - customDiscount / 100) * calcStore.noDiscountPrice())
+            parseInt(calcStore.noDiscountPrice() * (1 + customDiscount / 100))
           }}
           ₽</span
         >

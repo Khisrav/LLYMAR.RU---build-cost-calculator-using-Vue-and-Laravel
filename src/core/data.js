@@ -107,7 +107,7 @@ export let profiles = {
         unit: 'м.п.',
         amount: 0,
         total: 0,
-        img: 'https://random.imagecdn.app/300/150'
+        img: ''
     },
     L3: {
         price: 700,
@@ -115,7 +115,7 @@ export let profiles = {
         unit: 'м.п.',
         amount: 0,
         total: 0,
-        img: 'https://random.imagecdn.app/300/150'
+        img: ''
     },
     L4: {
         price: 800,
@@ -123,7 +123,7 @@ export let profiles = {
         unit: 'м.п.',
         amount: 0,
         total: 0,
-        img: 'https://random.imagecdn.app/300/150'
+        img: ''
     },
     L5: {
         price: 700,
@@ -138,7 +138,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L6',
         name: 'Профиль пристенный',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 300,
         unit: 'м.п.',
         amount: 0,
@@ -147,7 +147,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L12',
         name: 'Фетр щеточный 7*6',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 25,
         unit: 'м.п.',
         amount: 0,
@@ -156,7 +156,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L13',
         name: 'Фетр щеточный 4*8',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 35,
         unit: 'м.п.',
         amount: 0,
@@ -165,7 +165,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L14',
         name: 'Фетр щеточный 7*10',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'м.п.',
         amount: 0,
@@ -174,7 +174,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L15',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -183,7 +183,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L16',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -192,7 +192,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L17',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -201,7 +201,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L18',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -210,7 +210,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L19',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -219,7 +219,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L20',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -228,7 +228,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L21',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -237,7 +237,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L22',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -246,7 +246,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L26',
         name: 'Ролик',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
