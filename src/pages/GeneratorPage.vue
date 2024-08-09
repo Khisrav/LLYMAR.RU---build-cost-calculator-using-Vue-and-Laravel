@@ -1,7 +1,7 @@
 <script>
 import axios from "axios";
 import { API_BASE_URL, STORAGE_LINK } from "../core/config";
-import { additionals, opening_images } from "../core/data";
+import { additionals, discountRate, opening_images } from "../core/data";
 import ButtonLink from "../components/ButtonLink.vue";
 
 export default {
@@ -39,6 +39,8 @@ export default {
         this.vendors = response.data.vendors;
         this.items = response.data.items;
 
+        this.processDiscounts();
+
         var timeoutRef = setTimeout(() => {
           let isPrinted = false;
           var intervalRef = setInterval(() => {
@@ -60,6 +62,17 @@ export default {
     }
   },
   methods: {
+    processDiscounts() {
+      console.log("processing discounts");
+      console.log(this.additionals);
+      Object.values(this.additionals).forEach((add) => {
+        add.discount = discountRate(add.discount || this.user.discount);
+      });
+
+      Object.values(this.vendorsAmount).forEach((vendor) => {
+        vendor.discount = discountRate(vendor.discount || this.user.discount);
+      });
+    },
     checkImages(callback) {
       var imgs = document.images,
         len = imgs.length,

@@ -25,6 +25,9 @@ const calcStore = useCalcStore();
               v-for="(autoProfile, index) in calcStore.autoProfiles"
               :key="index"
               class="bg-white border-b hover:bg-gray-50"
+              :class="{
+                'print:hidden': profile.amount == 0,
+              }"
             >
               <th scope="row" class="px-6 py-4">
                 <img :src="autoProfile.img" class="max-w-20 md:max-w-60" />

@@ -130,7 +130,7 @@ export const useCalcStore = defineStore('calcStore', {
                 if (additional.is_checkable) {
                     additional.checked = false;
 
-                    if ([220, 230].includes(additional.vendor_code)) {
+                    if ([200, 220, 230].includes(additional.vendor_code)) {
                         additional.checked = true;
                     }
                 }
@@ -182,6 +182,9 @@ export const useCalcStore = defineStore('calcStore', {
             this.material_type = this.material_type == 'aluminium' ? 'polycarbonate' : 'aluminium';
 
             this.selectedProfile = this.material_type == 'aluminium' ? 200 : 210;
+            const notSelectedOne = this.material_type != 'aluminium' ? 200 : 210;
+            this.additionals.find(a => a.vendor_code == this.selectedProfile).checked = true;
+            this.additionals.find(a => a.vendor_code == notSelectedOne).checked = false;
 
             this.calculatePrice();
         },
@@ -227,14 +230,14 @@ export const useCalcStore = defineStore('calcStore', {
             const L100_L140 = [100, 110, 120, 130, 140];
             const L200_L210 = [200, 210];
 
-            L100_L140.concat(L200_L210).forEach(l => {
+            L100_L140.forEach(l => {
                 this.additionals.find(a => a.vendor_code == l).checked = false;
             })
 
             if (this.selectedGlassType) {
                 this.additionals.find(a => a.vendor_code == this.selectedGlassType).checked = true;
             }
-            this.additionals.find(a => a.vendor_code == this.selectedProfile).checked = true;
+            // this.additionals.find(a => a.vendor_code == this.selectedProfile).checked = true;
         },
 
         calculatePrice() {
@@ -391,6 +394,22 @@ export const useCalcStore = defineStore('calcStore', {
                             break;
                     }
                 });
+            });
+        },
+
+        resetRadio() {
+            this.selectedGlassType = 0;
+            this.selectedProfile = this.material_type == 'aluminium' ? 200 : 210;
+            const checkableVendorCodes = [100, 110, 120, 130, 140, 200, 210, 220, 230, 240];
+
+            this.additionals.forEach(additional => {
+                if (checkableVendorCodes.includes(additional.vendor_code)) {
+                    additional.checked = false;
+                    // additional.checked = additional.vendor_code == this.selectedProfile ? true : false;
+                } else {
+                    additional.amount = 0;
+                }
+                additional.total = 0;
             });
         },
 
