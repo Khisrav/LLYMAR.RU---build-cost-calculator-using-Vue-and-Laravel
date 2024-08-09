@@ -5,7 +5,7 @@ const calcStore = useCalcStore();
 </script>
 
 <template>
-  <div class="block">
+  <div class="block mb-8 pb-8">
     <div class="flex justify-between py-4 mt-8">
       <h3 class="text-xl lg:text-2xl uppercase font-bold">Дополнительно</h3>
       <button

@@ -5,6 +5,9 @@ const calcStore = useCalcStore();
 </script>
 
 <template>
+  <h1 class="font-bold text-2xl hidden print:block">
+    Итого: {{ calcStore.totalPrice }} ₽
+  </h1>
   <div
     class="print:hidden fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 overflow-hidden bg-white border border-gray-200 rounded-full bottom-4 left-1/2 shadow-2xl"
   >
