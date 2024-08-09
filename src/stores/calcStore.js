@@ -33,7 +33,7 @@ export const useCalcStore = defineStore('calcStore', {
         comment: '',
         telegramBotToken: TELEGRAM_TOKEN,
         chatId: CHAT_ID,
-        selectedGlassType: 100,
+        selectedGlassType: 0,
         selectedProfile: 200,
     }),
     actions: {
@@ -214,7 +214,7 @@ export const useCalcStore = defineStore('calcStore', {
                 if (additional.is_checkable) {
                     additional.amount = openingsWH.toFixed(3);
                 }
-                if ([200, 210].includes(additional.vendor_code)) {
+                if ([200, 210, 220, 230].includes(additional.vendor_code)) {
                     additional.amount = doorsAmount;
                 }
             });
@@ -231,7 +231,9 @@ export const useCalcStore = defineStore('calcStore', {
                 this.additionals.find(a => a.vendor_code == l).checked = false;
             })
 
-            this.additionals.find(a => a.vendor_code == this.selectedGlassType).checked = true;
+            if (this.selectedGlassType) {
+                this.additionals.find(a => a.vendor_code == this.selectedGlassType).checked = true;
+            }
             this.additionals.find(a => a.vendor_code == this.selectedProfile).checked = true;
         },
 
