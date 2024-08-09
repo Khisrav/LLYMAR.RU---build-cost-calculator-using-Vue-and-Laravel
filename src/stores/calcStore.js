@@ -498,7 +498,7 @@ export const useCalcStore = defineStore('calcStore', {
         },
 
         async sendMessage(order_id) {
-            const message = `<b>Новый расчет №${order_id}</b>\n\n<u>Тип профиля:</u> <code>${this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"}</code>\n<u>Комментарий:</u> <i>${this.comment}</i>\n<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>\n\n<a href='http://g89883cb.beget.tech/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
+            const message = `<b>Новый расчет №${order_id}</b>\n\n<u>Тип профиля:</u> <code>${this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"}</code>\n<u>Комментарий:</u> <i>${this.comment}</i>\n<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>\n\n<a href='${window.location.origin}/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
             try {
                 await axios.post(
                     `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
