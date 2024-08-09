@@ -1,9 +1,9 @@
-name: Deploy to Beget
+name: Deploy to Beget from MAIN branch
 
 on:
   push:
     branches:
-      - dev  # Change this to your deployment branch if different
+      - main  # Change this to your deployment branch if different
 
 jobs:
   build-and-deploy:
@@ -27,9 +27,9 @@ jobs:
     - name: Deploy to Beget via FTP
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
-        server: g89883cb.beget.tech
-        username: ${{ secrets.BEGET_FTP_USERNAME }}
-        password: ${{ secrets.BEGET_FTP_PASSWORD }}
+        server: llymar.ru
+        username: ${{ secrets.BEGET_FTP_USERNAME_MAIN }}
+        password: ${{ secrets.BEGET_FTP_PASSWORD_MAIN }}
         local-dir: dist/
         server-dir: public_html/  # Change this to your server directory
 
