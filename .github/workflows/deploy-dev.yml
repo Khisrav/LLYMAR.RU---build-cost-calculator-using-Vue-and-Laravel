@@ -1,4 +1,4 @@
-name: Deploy to Beget
+name: Deploy to Beget from DEV branch
 
 on:
   push:
