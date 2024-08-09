@@ -160,6 +160,24 @@ export default {
       });
       return temp;
     },
+    getVendorName(vendor_id) {
+      let temp;
+      this.vendors.forEach((v) => {
+        if (v.vendor_code == vendor_id) {
+          temp = v.name;
+        }
+      });
+      return temp;
+    },
+    getItemName(item_id) {
+      let temp;
+      this.items.forEach((i) => {
+        if (i.vendor_code == item_id) {
+          temp = i.name;
+        }
+      });
+      return temp;
+    },
     getItemImage(item_id) {
       let temp;
       this.items.forEach((i) => {
@@ -272,6 +290,7 @@ export default {
       <thead>
         <tr>
           <th>Картинка</th>
+          <th>Наименование</th>
           <th>Арт.</th>
           <th>Цена</th>
           <th>Кол-во</th>
@@ -283,9 +302,10 @@ export default {
           <td>
             <img
               :src="getVendorImage(vendor.vendor_code_id)"
-              style="max-width: 300px; max-height: 150px"
+              style="max-width: 150px; max-height: 150px"
             />
           </td>
+          <td>{{ getVendorName(vendor.vendor_code_id) }}</td>
           <td>L{{ vendor.vendor_code_id }}</td>
           <td>{{ vendor.price }}</td>
           <td>{{ vendor.amount }}</td>
@@ -299,9 +319,10 @@ export default {
           <td>
             <img
               :src="getItemImage(item.item_id)"
-              style="max-width: 300px; max-height: 150px"
+              style="max-width: 150px; max-height: 150px"
             />
           </td>
+          <td>{{ getItemName(item.item_id) }}</td>
           <td>L{{ item.item_id }}</td>
           <td>{{ item.price }}</td>
           <td>{{ item.amount }}</td>
@@ -316,7 +337,7 @@ export default {
 th,
 td {
   border: 1px solid #000;
-  padding: 2px;
+  padding: 4px;
   text-align: center;
 }
 </style>
