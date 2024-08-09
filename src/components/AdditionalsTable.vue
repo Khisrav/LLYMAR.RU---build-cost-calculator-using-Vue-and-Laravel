@@ -23,9 +23,9 @@ const calcStore = useCalcStore();
             <th scope="col" class="px-6 py-3">Арт.</th>
             <th scope="col" class="px-6 py-3">Картинка</th>
             <th scope="col" class="px-6 py-3">Наименование</th>
+            <th scope="col" class="px-6 py-3"></th>
             <th scope="col" class="px-6 py-3">Цена за ед.</th>
             <th scope="col" class="px-6 py-3">Ед. изм.</th>
-            <th scope="col" class="px-6 py-3"></th>
             <th scope="col" class="px-6 py-3">Кол-во</th>
             <th scope="col" class="px-6 py-3">Итого</th>
           </tr>
@@ -42,11 +42,6 @@ const calcStore = useCalcStore();
             </td>
             <td class="px-6 py-4 font-semibold text-black">
               {{ item.name }}
-            </td>
-            <td class="px-6 py-4 font-semibold">{{ item.price }}₽</td>
-            <td class="px-6 py-4">
-              <span v-if="item.unit == 'м2'">м<sup>2</sup></span>
-              <span v-else>{{ item.unit }}</span>
             </td>
             <td class="px-6 py-4">
               <div class="flex items-center" v-if="item.is_checkable == 1">
@@ -75,6 +70,11 @@ const calcStore = useCalcStore();
                   class="w-4 h-4 text-green-600 focus:ring-green-500 bg-gray-100 border-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 /> -->
               </div>
+            </td>
+            <td class="px-6 py-4 font-semibold">{{ item.price }}₽</td>
+            <td class="px-6 py-4">
+              <span v-if="item.unit == 'м2'">м<sup>2</sup></span>
+              <span v-else>{{ item.unit }}</span>
             </td>
             <td class="px-6 py-4 font-semibold">
               <div class="relative mb-6 print:hidden">

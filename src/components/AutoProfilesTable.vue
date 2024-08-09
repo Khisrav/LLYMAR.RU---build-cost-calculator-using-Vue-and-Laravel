@@ -14,9 +14,9 @@ const calcStore = useCalcStore();
               <th scope="col" class="px-6 py-3">Картинка</th>
               <th scope="col" class="px-6 py-3">Арт.</th>
               <th scope="col" class="px-6 py-3">Наименование</th>
+              <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Цена за ед.</th>
               <th scope="col" class="px-6 py-3">Ед. изм.</th>
-              <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Итого</th>
             </tr>
           </thead>
@@ -38,14 +38,14 @@ const calcStore = useCalcStore();
               <td class="px-6 py-4 font-semibold text-black">
                 {{ autoProfile.name }}
               </td>
-              <td class="px-6 py-4 font-semibold">{{ autoProfile.price }}₽</td>
-              <td class="px-6 py-4">
-                {{ autoProfile.unit }}
-              </td>
               <td class="px-6 py-4">
                 <div class="text-center font-bold text-black">
                   {{ autoProfile.amount }}
                 </div>
+              </td>
+              <td class="px-6 py-4 font-semibold">{{ autoProfile.price }}₽</td>
+              <td class="px-6 py-4">
+                {{ autoProfile.unit }}
               </td>
               <td class="px-6 py-4 font-semibold">{{ autoProfile.total }}₽</td>
             </tr>

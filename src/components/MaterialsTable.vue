@@ -63,9 +63,9 @@ const calcStore = useCalcStore();
               <th scope="col" class="px-6 py-3">Картинка</th>
               <th scope="col" class="px-6 py-3">Арт.</th>
               <th scope="col" class="px-6 py-3">Вид профиля</th>
+              <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Цена за ед.</th>
               <th scope="col" class="px-6 py-3">Ед. изм.</th>
-              <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Итого</th>
             </tr>
           </thead>
@@ -86,12 +86,12 @@ const calcStore = useCalcStore();
               <td class="px-6 py-4 font-semibold text-black">
                 {{ material.name }}
               </td>
+              <td class="px-6 py-4">
+                {{ material.amount }}
+              </td>
               <td class="px-6 py-4 font-semibold">{{ material.price }}₽</td>
               <td class="px-6 py-4">
                 {{ material.unit }}
-              </td>
-              <td class="px-6 py-4">
-                {{ material.amount }}
               </td>
               <td class="px-6 py-4 font-semibold">{{ material.total }}₽</td>
             </tr>

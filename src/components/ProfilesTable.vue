@@ -14,9 +14,9 @@ const calcStore = useCalcStore();
               <th scope="col" class="px-6 py-3">Картинка</th>
               <th scope="col" class="px-6 py-3">Арт.</th>
               <th scope="col" class="px-6 py-3">Наименование</th>
+              <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Цена за ед.</th>
               <th scope="col" class="px-6 py-3">Ед. изм.</th>
-              <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Итого</th>
             </tr>
           </thead>
@@ -36,10 +36,6 @@ const calcStore = useCalcStore();
               <td class="px-6 py-4 font-semibold text-black">
                 {{ profile.name }}
               </td>
-              <td class="px-6 py-4 font-semibold">{{ profile.price }}₽</td>
-              <td class="px-6 py-4">
-                {{ profile.unit }}
-              </td>
               <td class="px-6 py-4">
                 <div class="relative mb-6 print:hidden">
                   <select
@@ -56,6 +52,10 @@ const calcStore = useCalcStore();
                     {{ profile.amount }}
                   </div>
                 </div>
+              </td>
+              <td class="px-6 py-4 font-semibold">{{ profile.price }}₽</td>
+              <td class="px-6 py-4">
+                {{ profile.unit }}
               </td>
               <td class="px-6 py-4 font-semibold">{{ profile.total }}₽</td>
             </tr>
