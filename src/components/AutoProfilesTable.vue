@@ -26,7 +26,7 @@ const calcStore = useCalcStore();
               :key="index"
               class="bg-white border-b hover:bg-gray-50"
               :class="{
-                'print:hidden': profile.amount == 0,
+                'print:hidden': autoProfile.amount == 0,
               }"
             >
               <th scope="row" class="px-6 py-4">
