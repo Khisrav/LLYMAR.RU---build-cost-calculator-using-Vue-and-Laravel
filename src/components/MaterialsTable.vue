@@ -78,7 +78,7 @@ const calcStore = useCalcStore();
               class="bg-white border-b hover:bg-gray-50"
             >
               <th scope="row" class="px-6 py-4">
-                <img :src="material.img" class="rounded-xl max-w-20 md:max-w-60" />
+                <img :src="material.img" class="max-w-20 md:max-w-60" />
               </th>
               <td class="px-6 py-4 text-black">
                 {{ material.vendor_code }}

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { API_BASE_URL, CHAT_ID, TELEGRAM_TOKEN, STORAGE_LINK } from "../core/config";
-import { additionals, calc, discountRate, material_type, opening_images, openings, totals, profiles } from "../core/data";
+import { additionals, calc, discountRate, material_type, opening_images, openings, totals, profiles, getRadioNames } from "../core/data";
 import { getUser } from '../core/user.js';
 import axios from "axios";
 
@@ -33,6 +33,8 @@ export const useCalcStore = defineStore('calcStore', {
         comment: '',
         telegramBotToken: TELEGRAM_TOKEN,
         chatId: CHAT_ID,
+        selectedGlassType: 100,
+        selectedProfile: 200,
     }),
     actions: {
         async fetchVendors() {
@@ -127,6 +129,10 @@ export const useCalcStore = defineStore('calcStore', {
             this.additionals.forEach(additional => {
                 if (additional.is_checkable) {
                     additional.checked = false;
+
+                    if ([220, 230].includes(additional.vendor_code)) {
+                        additional.checked = true;
+                    }
                 }
             });
         },
@@ -175,6 +181,8 @@ export const useCalcStore = defineStore('calcStore', {
         changeMaterial() {
             this.material_type = this.material_type == 'aluminium' ? 'polycarbonate' : 'aluminium';
 
+            this.selectedProfile = this.material_type == 'aluminium' ? 200 : 210;
+
             this.calculatePrice();
         },
 
@@ -200,14 +208,31 @@ export const useCalcStore = defineStore('calcStore', {
             });
 
             const openingsWH = (this.openings.reduce((acc, o) => acc + o.width * o.height / 1000000, 0));
+            const doorsAmount = (this.openings.reduce((acc, o) => acc + o.doors, 0));
 
             this.additionals.forEach(additional => {
                 if (additional.is_checkable) {
                     additional.amount = openingsWH.toFixed(3);
                 }
+                if ([200, 210].includes(additional.vendor_code)) {
+                    additional.amount = doorsAmount;
+                }
             });
 
             this.updateAutoProfilesData();
+            this.updateAdditionalsData();
+        },
+
+        updateAdditionalsData() {
+            const L100_L140 = [100, 110, 120, 130, 140];
+            const L200_L210 = [200, 210];
+
+            L100_L140.concat(L200_L210).forEach(l => {
+                this.additionals.find(a => a.vendor_code == l).checked = false;
+            })
+
+            this.additionals.find(a => a.vendor_code == this.selectedGlassType).checked = true;
+            this.additionals.find(a => a.vendor_code == this.selectedProfile).checked = true;
         },
 
         calculatePrice() {
@@ -228,7 +253,14 @@ export const useCalcStore = defineStore('calcStore', {
             });
 
             this.additionals.forEach(additional => {
-                additional.total = parseInt(additional.price * additional.amount * additional.discount);
+                if (additional.is_checkable && additional.checked || !additional.is_checkable) {
+                    additional.total = parseInt(additional.price * additional.amount * additional.discount);
+                } else {
+                    additional.total = 0;
+                }
+                // if (additional.is_checkable && !additional.checked) {
+                //     additional.total = 0;
+                // }
             });
         },
 
@@ -254,9 +286,10 @@ export const useCalcStore = defineStore('calcStore', {
             });
 
             this.additionals.forEach(additional => {
-                if (!additional.is_checkable || additional.is_checkable && additional.checked) {
-                    tempPrice += additional.price * additional.amount;
-                }
+                // if (!additional.is_checkable || additional.is_checkable && additional.checked) {
+                //     tempPrice += additional.total;
+                // }
+                tempPrice += additional.total;
             });
 
             return tempPrice;
@@ -489,7 +522,7 @@ export const useCalcStore = defineStore('calcStore', {
             } else {
                 this.showError = true;
             }
-        },
+        }
     },
     getters: {
         totalPrice: (state) => {

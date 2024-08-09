@@ -35,7 +35,7 @@ const calcStore = useCalcStore();
             <td scope="row" class="px-6 py-4">
               <img
                 :src="calcStore.opening_images[opening.type]"
-                class="rounded-xl max-w-20 md:max-w-60"
+                class="max-w-20 md:max-w-60"
               />
             </td>
             <td class="px-6 py-4 text-base font-semibold text-black">

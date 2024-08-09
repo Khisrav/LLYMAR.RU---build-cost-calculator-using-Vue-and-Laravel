@@ -25,29 +25,46 @@ const calcStore = useCalcStore();
           <tbody>
             <tr
               v-for="item in calcStore.additionals"
+              :key="item.id"
               class="bg-white border-b hover:bg-gray-50"
             >
               <td class="px-6 py-4 text-black">L{{ item.vendor_code }}</td>
               <td class="px-6 py-4">
-                <img :src="item.img" class="rounded-xl max-w-20 md:max-w-60" />
+                <img :src="item.img" class="max-w-20 md:max-w-60 max-h-20" />
               </td>
               <td class="px-6 py-4 font-semibold text-black">
                 {{ item.name }}
               </td>
               <td class="px-6 py-4 font-semibold">{{ item.price }}₽</td>
               <td class="px-6 py-4">
-                {{ item.unit }}
+                <span v-if="item.unit == 'м2'">м<sup>2</sup></span>
+                <span v-else>{{ item.unit }}</span>
               </td>
               <td class="px-6 py-4">
-                <div class="flex items-center" v-if="item.is_checkable">
+                <div class="flex items-center" v-if="item.is_checkable == 1">
                   <input
-                    :checked="item.checked"
                     v-model="item.checked"
                     @change="calcStore.calculatePrice()"
-                    id="checked-checkbox"
                     type="checkbox"
-                    value=""
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                </div>
+                <div class="flex items-center mb-4" v-else-if="item.is_checkable == 2">
+                  <input
+                    v-if="[100, 110, 120, 130, 140].includes(item.vendor_code)"
+                    v-model="calcStore.selectedGlassType"
+                    type="radio"
+                    @change="calcStore.calculatePrice()"
+                    :value="item.vendor_code"
+                    class="w-4 h-4 text-blue-600 focus:ring-blue-500 bg-gray-100 border-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <input
+                    v-if="[200, 210].includes(item.vendor_code)"
+                    v-model="calcStore.selectedProfile"
+                    disabled=""
+                    type="radio"
+                    :value="item.vendor_code"
+                    class="w-4 h-4 text-green-600 focus:ring-green-500 bg-gray-100 border-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                 </div>
               </td>

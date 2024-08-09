@@ -260,3 +260,12 @@ export let totals = {
 export const discountRate = (discount) => {
     return parseFloat((1 - discount / 100).toFixed(2));
 }
+
+export const getRadioNames = (vendor_code) => {
+    const names = {
+        'glass_types': [100, 110, 120, 130, 140],
+        'manufacturing_material': [200, 210],
+    }
+
+    return names.glass_types.includes(vendor_code) ? 'glass_types' : names.manufacturing_material.includes(vendor_code) ? 'manufacturing_material' : '';
+}

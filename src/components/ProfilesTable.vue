@@ -27,7 +27,7 @@ const calcStore = useCalcStore();
               class="bg-white border-b hover:bg-gray-50"
             >
               <td scope="row" class="px-6 py-4">
-                <img :src="profile.img" class="rounded-xl max-w-20 md:max-w-60" />
+                <img :src="profile.img" class="max-w-20 md:max-w-60" />
               </td>
               <td class="px-6 py-4 text-black">{{ index }}</td>
               <td class="px-6 py-4 font-semibold text-black">
