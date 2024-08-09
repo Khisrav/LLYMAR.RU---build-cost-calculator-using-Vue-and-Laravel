@@ -1,0 +1,46 @@
+name: Deploy to Beget
+
+on:
+  push:
+    branches:
+      - dev  # Change this to your deployment branch if different
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'  # Specify the Node.js version
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Deploy to Beget via FTP
+      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      with:
+        server: g89883cb.beget.tech
+        username: ${{ secrets.BEGET_FTP_USERNAME }}
+        password: ${{ secrets.BEGET_FTP_PASSWORD }}
+        local-dir: dist/
+        server-dir: public_html/  # Change this to your server directory
+
+    # - name: Deploy to Beget via SSH
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: ${{ secrets.BEGET_SSH_HOST }}
+    #     username: ${{ secrets.BEGET_SSH_USERNAME }}
+    #     key: ${{ secrets.BEGET_SSH_KEY }}
+    #     port: ${{ secrets.BEGET_SSH_PORT }}
+    #     script: |
+    #       cd /path/to/your/site
+    #       rm -rf *
+    #       cp -r /path/to/local/dist/* .

@@ -16,6 +16,8 @@ export const opening_images = {
     left: '/assets/openings-left.jpg',
     right: '/assets/openings-right.jpg',
     center: '/assets/openings-center.jpg',
+    'inner-left': '/assets/openings-inner-left.jpg',
+    'inner-right': '/assets/openings-inner-right.jpg',
 };
 export let calc = {
     openings: [
@@ -51,20 +53,34 @@ export const openings = [
         width: 3000,
         height: 2700
     },
-    {
-        type: 'right',
-        name: 'Правый проем',
-        doors: 2,
-        width: 3000,
-        height: 2700
-    },
-    {
-        type: 'center', 
-        name: 'Центральный проем',
-        doors: 4,
-        width: 3000,
-        height: 2700
-    },
+    // {
+    //     type: 'right',
+    //     name: 'Правый проем',
+    //     doors: 2,
+    //     width: 3000,
+    //     height: 2700
+    // },
+    // {
+    //     type: 'center', 
+    //     name: 'Центральный проем',
+    //     doors: 4,
+    //     width: 3000,
+    //     height: 2700
+    // },
+    // {
+    //     type: 'inner-left', 
+    //     name: 'Левый внутренний проем',
+    //     doors: 3,
+    //     width: 3000,
+    //     height: 2700
+    // },
+    // {
+    //     type: 'inner-left', 
+    //     name: 'Правый внутренний проем',
+    //     doors: 3,
+    //     width: 3000,
+    //     height: 2700
+    // },
 ];
 
 export let material_type = 'aluminium';
@@ -91,7 +107,7 @@ export let profiles = {
         unit: 'м.п.',
         amount: 0,
         total: 0,
-        img: 'https://random.imagecdn.app/300/150'
+        img: ''
     },
     L3: {
         price: 700,
@@ -99,7 +115,7 @@ export let profiles = {
         unit: 'м.п.',
         amount: 0,
         total: 0,
-        img: 'https://random.imagecdn.app/300/150'
+        img: ''
     },
     L4: {
         price: 800,
@@ -107,7 +123,7 @@ export let profiles = {
         unit: 'м.п.',
         amount: 0,
         total: 0,
-        img: 'https://random.imagecdn.app/300/150'
+        img: ''
     },
     L5: {
         price: 700,
@@ -122,7 +138,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L6',
         name: 'Профиль пристенный',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 300,
         unit: 'м.п.',
         amount: 0,
@@ -131,7 +147,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L12',
         name: 'Фетр щеточный 7*6',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 25,
         unit: 'м.п.',
         amount: 0,
@@ -140,7 +156,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L13',
         name: 'Фетр щеточный 4*8',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 35,
         unit: 'м.п.',
         amount: 0,
@@ -149,7 +165,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L14',
         name: 'Фетр щеточный 7*10',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'м.п.',
         amount: 0,
@@ -158,7 +174,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L15',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -167,7 +183,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L16',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -176,7 +192,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L17',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -185,7 +201,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L18',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -194,7 +210,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L19',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -203,7 +219,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L20',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -212,7 +228,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L21',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -221,7 +237,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L22',
         name: '',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -230,7 +246,7 @@ export let autoProfiles = [
     {
         vendor_code: 'L26',
         name: 'Ролик',
-        img: 'https://random.imagecdn.app/299/149',
+        img: '',
         price: 39,
         unit: 'шт.',
         amount: 0,
@@ -243,4 +259,13 @@ export let totals = {
 
 export const discountRate = (discount) => {
     return parseFloat((1 - discount / 100).toFixed(2));
+}
+
+export const getRadioNames = (vendor_code) => {
+    const names = {
+        'glass_types': [100, 110, 120, 130, 140],
+        'manufacturing_material': [200, 210],
+    }
+
+    return names.glass_types.includes(vendor_code) ? 'glass_types' : names.manufacturing_material.includes(vendor_code) ? 'manufacturing_material' : '';
 }

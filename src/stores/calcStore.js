@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { API_BASE_URL, CHAT_ID, TELEGRAM_TOKEN, STORAGE_LINK } from "../core/config";
-import { additionals, calc, discountRate, material_type, opening_images, openings, totals, profiles } from "../core/data";
+import { additionals, calc, discountRate, material_type, opening_images, openings, totals, profiles, getRadioNames } from "../core/data";
 import { getUser } from '../core/user.js';
 import axios from "axios";
 
@@ -33,6 +33,8 @@ export const useCalcStore = defineStore('calcStore', {
         comment: '',
         telegramBotToken: TELEGRAM_TOKEN,
         chatId: CHAT_ID,
+        selectedGlassType: 100,
+        selectedProfile: 200,
     }),
     actions: {
         async fetchVendors() {
@@ -123,6 +125,16 @@ export const useCalcStore = defineStore('calcStore', {
                     });
                 }
             });
+
+            this.additionals.forEach(additional => {
+                if (additional.is_checkable) {
+                    additional.checked = false;
+
+                    if ([220, 230].includes(additional.vendor_code)) {
+                        additional.checked = true;
+                    }
+                }
+            });
         },
 
         async getUserData() {
@@ -140,55 +152,93 @@ export const useCalcStore = defineStore('calcStore', {
                 width: 3000,
                 height: 2700,
             })
+
+            this.calculatePrice();
         },
 
         removeOpening(index) {
             this.openings.splice(index, 1);
+
+            this.calculatePrice();
         },
 
         changeOpeningType(index) {
             if (this.openings[index].type == "center") {
                 this.openings[index].doors = 4;
-            } else {
+                this.openings[index].name = 'Центральный проем';
+            } else if (["right", "left"].includes(this.openings[index].type)) {
                 this.openings[index].doors = 2;
+                if (this.openings[index].type == 'right') this.openings[index].name = 'Правый проем';
+            } else {
+                this.openings[index].doors = 3;
+                if (this.openings[index].type == 'inner-right') this.openings[index].name = 'Входная группа правая';
+                else this.openings[index].name = 'Входная группа левая';
             }
+
+            this.calculatePrice();
         },
 
         changeMaterial() {
             this.material_type = this.material_type == 'aluminium' ? 'polycarbonate' : 'aluminium';
 
+            this.selectedProfile = this.material_type == 'aluminium' ? 200 : 210;
+
             this.calculatePrice();
         },
 
         updateVendorsData() {
-            let lrAmount = 0,
-                cAmount = 0,
-                onlyCentralAmount = 0;
+            let lrAmount = 0, cAmount = 0, onlyCentralAmount = 0;
+            let innerLAmount = 0, innerRAmount = 0;
             this.openings.forEach((opening) => {
-                if (opening.type != "center") lrAmount += opening.doors * 2 - 2;
-                else {
+                if (['right', 'left'].includes(opening.type)) lrAmount += opening.doors * 2 - 2;
+                else if (opening.type == 'center') {
                     cAmount += opening.doors * 2 - 4;
                     onlyCentralAmount++;
+                } else {
+                    innerLAmount += (opening.type == 'inner-left' ? 1 : 0);
+                    innerRAmount += (opening.type == 'inner-right' ? 1 : 0);
                 }
-                // else cAmount++;
             });
 
-            this.materials[this.material_type == "aluminium" ? 0 : 2].amount = parseInt(
-                lrAmount + cAmount
-              );
-              this.materials[this.material_type == "aluminium" ? 1 : 3].amount = parseInt(
-                this.material_type == "aluminium" ? onlyCentralAmount : onlyCentralAmount * 2
-              );
+            this.materials[this.material_type == "aluminium" ? 0 : 2].amount = parseInt(lrAmount + cAmount + (innerLAmount + innerRAmount) * 2);
+            this.materials[this.material_type == "aluminium" ? 1 : 3].amount = parseInt(this.material_type == "aluminium" ? onlyCentralAmount +  innerLAmount + innerRAmount : onlyCentralAmount * 2 + (innerLAmount + innerRAmount) * 2);
 
             [2, 4].forEach(l => {
                 this.profiles[`L${l}`].amount = this.profiles[`L${l - 1}`].amount;
             });
 
+            const openingsWH = (this.openings.reduce((acc, o) => acc + o.width * o.height / 1000000, 0));
+            const doorsAmount = (this.openings.reduce((acc, o) => acc + o.doors, 0));
+
+            this.additionals.forEach(additional => {
+                if (additional.is_checkable) {
+                    additional.amount = openingsWH.toFixed(3);
+                }
+                if ([200, 210].includes(additional.vendor_code)) {
+                    additional.amount = doorsAmount;
+                }
+            });
+
             this.updateAutoProfilesData();
+            this.updateAdditionalsData();
+        },
+
+        updateAdditionalsData() {
+            const L100_L140 = [100, 110, 120, 130, 140];
+            const L200_L210 = [200, 210];
+
+            L100_L140.concat(L200_L210).forEach(l => {
+                this.additionals.find(a => a.vendor_code == l).checked = false;
+            })
+
+            this.additionals.find(a => a.vendor_code == this.selectedGlassType).checked = true;
+            this.additionals.find(a => a.vendor_code == this.selectedProfile).checked = true;
         },
 
         calculatePrice() {
             this.updateVendorsData();
+
+            this.validateAdditionals();
 
             this.materials.forEach(material => {
                 material.total = parseInt(material.amount * material.price * material.discount);
@@ -203,7 +253,20 @@ export const useCalcStore = defineStore('calcStore', {
             });
 
             this.additionals.forEach(additional => {
-                additional.total = parseInt(additional.price * additional.amount * additional.discount);
+                if (additional.is_checkable && additional.checked || !additional.is_checkable) {
+                    additional.total = parseInt(additional.price * additional.amount * additional.discount);
+                } else {
+                    additional.total = 0;
+                }
+                // if (additional.is_checkable && !additional.checked) {
+                //     additional.total = 0;
+                // }
+            });
+        },
+
+        validateAdditionals() {
+            this.additionals.forEach(additional => {
+                additional.amount = additional.amount < 0  ? 0 : additional.amount;
             });
         },
 
@@ -223,88 +286,109 @@ export const useCalcStore = defineStore('calcStore', {
             });
 
             this.additionals.forEach(additional => {
-                tempPrice += additional.price * additional.amount;
+                // if (!additional.is_checkable || additional.is_checkable && additional.checked) {
+                //     tempPrice += additional.total;
+                // }
+                tempPrice += additional.total;
             });
 
             return tempPrice;
         },
 
         updateAutoProfilesData() {
-            let tempCentral = 0,
-                tempLeft = 0,
-                tempRight = 0;
-            this.openings.forEach((o) => {
-                if (o.type == "center")     { tempCentral += o.doors; }
-                else if (o.type == "right") { tempRight   += o.doors; }
-                else if (o.type == "left")  { tempLeft    += o.doors; }
-            });
-
             this.autoProfiles.forEach(autoProfile => {
                 autoProfile.amount = 0;
-                switch (autoProfile.vendor_code) {
-                  case "L6":
-                    autoProfile.amount = this.openings.length * 6;
-                    break;
-                  case "L12":
-                    autoProfile.amount = this.profiles.L2.amount * 6 + this.profiles.L4.amount * 4;
-                    if (this.material_type == "aluminium") {
-                        autoProfile.amount += this.materials[1].amount * 9;
-                    } else {
-                        autoProfile.amount += this.materials[2].amount * 3 + this.materials[3].amount * 3;
+            });
+
+            this.openings.forEach((o) => {
+                let tempCentral = 0, tempLeft = 0, tempRight = 0, tempInnerLeft = 0, tempInnerRight = 0;
+                if (o.type == "center")           { tempCentral    += o.doors; }
+                else if (o.type == "right")       { tempRight      += o.doors; }
+                else if (o.type == "left")        { tempLeft       += o.doors; }
+                else if (o.type == "inner-left")  { tempInnerLeft  += o.doors; }
+                else if (o.type == "inner-right") { tempInnerRight += o.doors; }
+
+                this.autoProfiles.forEach(autoProfile => {
+                    switch (autoProfile.vendor_code) {
+                        case "L6":
+                            autoProfile.amount = this.openings.length * 6;
+                            break;
+                        case "L12":
+                            autoProfile.amount = this.profiles.L2.amount * 6 + this.profiles.L4.amount * 4;
+                            if (this.material_type == "aluminium") {
+                                autoProfile.amount += this.materials[1].amount * 9;
+                            } else {
+                                autoProfile.amount += this.materials[2].amount * 3 + this.materials[3].amount * 3;
+                            }
+                            break;
+                        case "L13":
+                            autoProfile.amount = 
+                                (this.material_type == "aluminium" ? this.materials[0].amount * 3 : 0) + 
+                                parseInt(this.profiles["L5"].amount) * 2;
+                            break;
+                        case "L14":
+                            autoProfile.amount = this.autoProfiles[0].amount * 2;
+                            break;
+                        case "L15":
+                            autoProfile.amount +=
+                                (tempCentral ? tempCentral / 2 - 1 : 0) +
+                                (tempRight ? tempRight - 1 : 0) + 
+                                (tempInnerRight ? 1 : 0);
+                            break;
+                        case "L16":
+                            autoProfile.amount +=
+                                (tempCentral ? tempCentral - 2 : 0) +
+                                (tempLeft ? 1 : 0) + tempRight +
+                                (tempInnerLeft ? 1 : 0) +
+                                (tempInnerRight ? 2 : 0);
+                            break;
+                        case "L17":
+                            autoProfile.amount += 
+                                (tempCentral ? 1 : 0) + 
+                                (tempInnerLeft ? 1 : 0) +
+                                (tempInnerRight ? 1 : 0);
+                            break;
+                        case "L18":
+                            autoProfile.amount +=
+                                (tempLeft ? tempLeft - 1 : 0) +
+                                (tempCentral ? tempCentral / 2 - 1 : 0) +
+                                (tempInnerLeft ? 1 : 0);
+                            break;
+                        case "L19":
+                            autoProfile.amount +=
+                                (tempLeft ? tempLeft : 0) +
+                                (tempRight ? 1 : 0) +
+                                (tempCentral ? tempCentral - 2 : 0) +
+                                (tempInnerLeft ? 2 : 0) +
+                                (tempInnerRight ? 1 : 0);
+                            break;
+                        case "L20":
+                            autoProfile.amount += tempCentral ? 1 : 0 +
+                                (tempInnerLeft ? 1 : 0) +
+                                (tempInnerRight ? 1 : 0);
+                            break;
+                        case "L21":
+                            autoProfile.amount +=
+                                (tempCentral ? tempCentral - 2 : 0) +
+                                (tempLeft ? tempLeft - 1 : 0) +
+                                (tempRight ? tempRight - 1 : 0) + 
+                                (tempInnerLeft ? 1 : 0) +
+                                (tempInnerRight ? 1 : 0);
+                            break;
+                        case "L22":
+                            autoProfile.amount +=
+                                (tempCentral ? tempCentral - 4 : 0) +
+                                (tempLeft ? tempLeft - 2 : 0) +
+                                (tempRight ? tempRight - 2 : 0);
+                            break;
+                        case "L26":
+                            autoProfile.amount += (tempLeft + tempCentral + tempRight) * 2 + 
+                                ((tempInnerLeft + tempInnerRight) ? 6 : 0);
+                            break;
+                        default:
+                            break;
                     }
-                    break;
-                  case "L13":
-                    autoProfile.amount = (this.material_type == "aluminium" ? this.materials[0].amount * 3 : 0) + parseInt(this.profiles["L5"].amount) * 2;
-                    break;
-                  case "L14":
-                    autoProfile.amount = this.autoProfiles[0].amount * 2;
-                    break;
-                  case "L15":
-                    autoProfile.amount =
-                        (tempCentral != 0 ? tempCentral / 2 - 1 : 0) +
-                        (tempRight != 0 ? tempRight - 1 : 0);
-                    break;
-                  case "L16":
-                    autoProfile.amount =
-                        (tempCentral != 0 ? tempCentral / 2 - 1 : 0) +
-                        (tempLeft != 0 ? 1 : 0) +
-                        tempRight;
-                    break;
-                  case "L17":
-                    autoProfile.amount = tempCentral != 0 ? 1 : 0;
-                    break;
-                  case "L18":
-                    autoProfile.amount =
-                        (tempLeft != 0 ? tempLeft - 1 : 0) +
-                        (tempCentral != 0 ? tempCentral / 2 - 1 : 0);
-                    break;
-                  case "L19":
-                    autoProfile.amount =
-                        (tempLeft != 0 ? tempLeft : 0) +
-                        (tempRight != 0 ? 1 : 0) +
-                        (tempCentral != 0 ? tempCentral / 2 - 1 : 0);
-                    break;
-                  case "L20":
-                    autoProfile.amount = tempCentral != 0 ? 1 : 0;
-                    break;
-                  case "L21":
-                    autoProfile.amount =
-                        (tempCentral != 0 ? tempCentral - 2 : 0) +
-                        (tempLeft != 0 ? tempLeft - 1 : 0) +
-                        (tempRight != 0 ? tempRight - 1 : 0);
-                    break;
-                  case "L22":
-                    autoProfile.amount =
-                        (tempCentral != 0 ? tempCentral - 4 : 0) +
-                        (tempLeft != 0 ? tempLeft - 2 : 0) +
-                        (tempRight != 0 ? tempRight - 2 : 0);
-                    break;
-                  case "L26":
-                    autoProfile.amount = (tempLeft + tempCentral + tempRight) * 2;
-                    break;
-                  default:
-                    break;
-                }
+                });
             });
         },
 
@@ -367,7 +451,7 @@ export const useCalcStore = defineStore('calcStore', {
             this.totals.additionals = [];
             this.additionals.forEach((additional) => {
                 additional.amount = parseInt(additional.amount);
-                if (additional.amount > 0) {
+                if (additional.amount > 0 && (additional.is_checkable && additional.checked || !additional.is_checkable)) {
                     let vendor_code = additional.vendor_code;
                     this.totals.additionals.push({
                         id: vendor_code,
@@ -402,18 +486,9 @@ export const useCalcStore = defineStore('calcStore', {
                         },
                     }
                 );
-      
-              if (response.status === 200) {
-                    this.toast(true);
-        
-                    if (await this.sendMessage(response.data.order_id)) {
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
-                    }
-              } else {
-                    this.toast(401);
-              }
+
+                this.toast(response.status === 200 ? true : 401);
+                await this.sendMessage(response.data.order_id);
             } catch (error) {
                 console.log(error);
                 this.toast(false);
@@ -421,7 +496,7 @@ export const useCalcStore = defineStore('calcStore', {
         },
 
         async sendMessage(order_id) {
-            const message = `<b>Новый расчет №${order_id}</b>\n\n<u>Тип профиля:</u> <code>${this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"}</code>\n<u>Комментарий:</u> <i>${this.comment}</i>\n<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>\n\n<a href='https://llymar.ru/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
+            const message = `<b>Новый расчет №${order_id}</b>\n\n<u>Тип профиля:</u> <code>${this.totals.materialType == "aluminium" ? "Алюминий" : "Поликарбонат"}</code>\n<u>Комментарий:</u> <i>${this.comment}</i>\n<u>Общая стоимость: </u> <code>${this.totals.totalPrice}₽</code>\n\n<a href='http://g89883cb.beget.tech/generate-pdf/${this.user_id}-${order_id}'>Ссылка на PDF</a>`;
             try {
                 await axios.post(
                     `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`,
@@ -447,13 +522,19 @@ export const useCalcStore = defineStore('calcStore', {
             } else {
                 this.showError = true;
             }
-        },
+        }
     },
     getters: {
         totalPrice: (state) => {
             const materials_price = state.materials.reduce((acc, material) => acc + material.total, 0);
             const autoProfiles_price = state.autoProfiles.reduce((acc, autoProfile) => acc + autoProfile.total, 0);
-            const additionals_price = state.additionals.reduce((acc, additional) => acc + additional.total, 0);
+            const additionals_price = state.additionals.reduce((acc, additional) => {
+                if (!additional.is_checkable || additional.is_checkable && additional.checked) {
+                    return acc + additional.total
+                } else {
+                    return acc;
+                }
+            }, 0);
 
             let profiles_price = 0;
             Object.keys(state.profiles).forEach(key => profiles_price += state.profiles[key].total);

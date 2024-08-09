@@ -276,18 +276,7 @@ export default {
           <td>L{{ vendor.vendor_code_id }}</td>
           <td>{{ vendor.price }}</td>
           <td>{{ vendor.amount }}</td>
-          <td>
-            {{
-              parseInt(
-                vendor.price *
-                  vendor.amount *
-                  (vendor.discount
-                    ? 1 - vendorsAmount[index].discount / 100
-                    : 1 - user.discount / 100)
-              )
-            }}
-            ₽
-          </td>
+          <td>{{ parseInt(vendor.price * vendor.amount * vendor.discount) }} ₽</td>
         </tr>
         <tr
           v-if="additionals.length != 0"
@@ -303,18 +292,7 @@ export default {
           <td>L{{ item.item_id }}</td>
           <td>{{ item.price }}</td>
           <td>{{ item.amount }}</td>
-          <td>
-            {{
-              parseInt(
-                item.price *
-                  item.amount *
-                  (item.discount
-                    ? 1 - additionals[index].discount / 100
-                    : 1 - user.discount / 100)
-              )
-            }}
-            ₽
-          </td>
+          <td>{{ parseInt(item.price * item.amount * item.discount) }} ₽</td>
         </tr>
       </tbody>
     </table>

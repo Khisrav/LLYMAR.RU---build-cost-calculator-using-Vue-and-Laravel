@@ -11,6 +11,7 @@ import MaterialsTable from "../components/MaterialsTable.vue";
 import ProfilesTable from "../components/ProfilesTable.vue";
 import AutoProfilesTable from "../components/AutoProfilesTable.vue";
 import SubmitBox from "../components/SubmitBox.vue";
+import PricingBlock from "../components/PricingBlock.vue";
 
 export default defineComponent({
   components: {
@@ -23,6 +24,7 @@ export default defineComponent({
     ProfilesTable,
     AutoProfilesTable,
     SubmitBox,
+    PricingBlock,
   },
   setup() {
     const calcStore = useCalcStore();
@@ -57,6 +59,8 @@ export default defineComponent({
       <ProfilesTable />
 
       <AutoProfilesTable />
+
+      <PricingBlock />
 
       <AdditionalsTable />
 
