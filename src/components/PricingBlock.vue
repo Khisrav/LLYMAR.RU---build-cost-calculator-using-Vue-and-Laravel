@@ -1,37 +1,35 @@
 <script setup>
-import { ref } from "vue";
 import { useCalcStore } from "../stores/calcStore";
 
 const calcStore = useCalcStore();
-const customDiscount = ref(0);
 </script>
 
 <template>
-  <div class="mt-8 pt-8 mx-auto max-w-screen-xl sm:py-16 lg:px-0 print:pt-2">
+  <div class="mt-8 pt-8 mx-auto max-w-screen-xl sm:py-16 lg:px-0 print:hidden">
     <div
       class="block max-w-4xl mx-auto p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
     >
       <h5 class="m-0 mb-2 text-2xl font-bold tracking-tight text-gray-900">
         Расчет стоимости
       </h5>
-      <p class="fonta-normal text-gray-700 mt-3">
+      <p class="font-normal text-gray-700 mt-3">
         Цена со скидкой:
         <span class="float-right font-semibold">{{ calcStore.totalPrice }} ₽</span>
       </p>
-      <p class="fonta-normal text-gray-700 mt-3">
+      <p class="font-normal text-gray-700 mt-3">
         Розничная цена:
         <span class="float-right font-semibold">{{ calcStore.noDiscountPrice() }} ₽</span>
       </p>
-      <p class="fonta-normal text-gray-700 mt-3">
+      <p class="font-normal text-gray-700 mt-3">
         Ваша наценка:
-        <span class="float-right font-semibold">{{ customDiscount }}%</span>
+        <span class="float-right font-semibold">{{ calcStore.customDiscount }}%</span>
       </p>
       <div class="relative mb-6">
         <label for="labels-range-input" class="sr-only">Labels range</label>
         <input
           id="labels-range-input"
           type="range"
-          v-model="customDiscount"
+          v-model="calcStore.customDiscount"
           min="0"
           max="100"
           step="1"
@@ -48,14 +46,9 @@ const customDiscount = ref(0);
           >100%</span
         >
       </div>
-      <p class="fonta-normal text-gray-700 mt-3">
-        Цена с наценкой <b>{{ customDiscount }}%</b>:
-        <span class="float-right font-semibold"
-          >{{
-            parseInt(calcStore.noDiscountPrice() * (1 + customDiscount / 100))
-          }}
-          ₽</span
-        >
+      <p class="font-normal text-gray-700 mt-3">
+        Цена с наценкой <b>{{ calcStore.customDiscount }}%</b>:
+        <span class="float-right font-semibold">{{ calcStore.markupPrice() }} ₽</span>
       </p>
     </div>
   </div>

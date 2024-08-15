@@ -5,7 +5,7 @@ const calcStore = useCalcStore();
 </script>
 
 <template>
-  <div class="block">
+  <div class="block print:hidden">
     <h3 class="text-xl lg:text-2xl uppercase font-bold py-4 mt-8">Профиль</h3>
     <div class="shadow-2xl rounded-2xl shadow-primary-200">
       <div class="m-4">

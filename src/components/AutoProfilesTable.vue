@@ -5,7 +5,7 @@ const calcStore = useCalcStore();
 </script>
 
 <template>
-  <div class="block">
+  <div class="block print:hidden">
     <div class="shadow-2xl mt-8 pt-8 rounded-2xl shadow-primary-200">
       <div class="relative overflow-x-auto rounded-2xl shadow-2xl shadow-primary-200">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500">

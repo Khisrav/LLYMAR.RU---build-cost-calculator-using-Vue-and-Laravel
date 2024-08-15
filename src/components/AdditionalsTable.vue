@@ -5,29 +5,31 @@ const calcStore = useCalcStore();
 </script>
 
 <template>
-  <div class="block mb-8 pb-8">
-    <div class="flex justify-between py-4 mt-8">
+  <div class="block pb-8">
+    <div class="flex justify-between py-4 mt-8 print:m-0">
       <h3 class="text-xl lg:text-2xl uppercase font-bold">Дополнительно</h3>
       <button
         type="button"
         @click="calcStore.resetRadio()"
-        class="text-black bg-yellow-300 hover:bg-yellow-300 font-semibold focus:ring-4 rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-yellow dark:hover:bg-yellow-300"
+        class="print:hidden text-black bg-yellow-300 hover:bg-yellow-300 font-semibold focus:ring-4 rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-yellow dark:hover:bg-yellow-300"
       >
         Сбросить
       </button>
     </div>
-    <div class="relative overflow-x-auto rounded-2xl shadow-2xl shadow-primary-200">
+    <div
+      class="relative overflow-x-auto rounded-2xl shadow-2xl shadow-primary-200 print:shadow-none"
+    >
       <table class="w-full text-sm text-left rtl:text-right text-gray-500">
         <thead class="text-xs text-primary-900 uppercase bg-primary-100">
           <tr>
-            <th scope="col" class="px-6 py-3">Арт.</th>
+            <th scope="col" class="px-6 py-3 print:hidden">Арт.</th>
             <th scope="col" class="px-6 py-3">Картинка</th>
             <th scope="col" class="px-6 py-3">Наименование</th>
-            <th scope="col" class="px-6 py-3"></th>
-            <th scope="col" class="px-6 py-3">Цена за ед.</th>
+            <th scope="col" class="px-6 py-3 print:hidden"></th>
+            <th scope="col" class="px-6 py-3 print:hidden">Цена за ед.</th>
             <th scope="col" class="px-6 py-3">Ед. изм.</th>
             <th scope="col" class="px-6 py-3">Кол-во</th>
-            <th scope="col" class="px-6 py-3">Итого</th>
+            <th scope="col" class="px-6 py-3 print:hidden">Итого</th>
           </tr>
         </thead>
         <tbody>
@@ -35,15 +37,18 @@ const calcStore = useCalcStore();
             v-for="item in calcStore.additionals"
             :key="item.id"
             class="bg-white border-b hover:bg-gray-50"
+            :class="{
+              'print:hidden': item.amount == 0 || (item.is_checkable && !item.checked),
+            }"
           >
-            <td class="px-6 py-4 text-black">L{{ item.vendor_code }}</td>
+            <td class="px-6 py-4 text-black print:hidden">L{{ item.vendor_code }}</td>
             <td class="px-6 py-4">
               <img :src="item.img" class="max-w-20 md:max-w-60 max-h-20" />
             </td>
             <td class="px-6 py-4 font-semibold text-black">
               {{ item.name }}
             </td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 print:hidden">
               <div class="flex items-center" v-if="item.is_checkable == 1">
                 <input
                   v-model="item.checked"
@@ -61,23 +66,15 @@ const calcStore = useCalcStore();
                   :value="item.vendor_code"
                   class="w-4 h-4 text-blue-600 focus:ring-blue-500 bg-gray-100 border-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
-                <!-- <input
-                  v-if="[200, 210].includes(item.vendor_code)"
-                  v-model="calcStore.selectedProfile"
-                  disabled=""
-                  type="radio"
-                  :value="item.vendor_code"
-                  class="w-4 h-4 text-green-600 focus:ring-green-500 bg-gray-100 border-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                /> -->
               </div>
             </td>
-            <td class="px-6 py-4 font-semibold">{{ item.price }}₽</td>
+            <td class="px-6 py-4 font-semibold print:hidden">{{ item.price }}₽</td>
             <td class="px-6 py-4">
               <span v-if="item.unit == 'м2'">м<sup>2</sup></span>
               <span v-else>{{ item.unit }}</span>
             </td>
             <td class="px-6 py-4 font-semibold">
-              <div class="relative mb-6 print:hidden">
+              <div class="relative mb-6">
                 <span v-if="item.is_checkable">
                   {{ item.amount }}
                 </span>
@@ -91,7 +88,7 @@ const calcStore = useCalcStore();
                 />
               </div>
             </td>
-            <td class="px-6 py-4 font-semibold">{{ item.total }}₽</td>
+            <td class="px-6 py-4 font-semibold print:hidden">{{ item.total }}₽</td>
           </tr>
         </tbody>
       </table>

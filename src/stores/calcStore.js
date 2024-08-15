@@ -13,7 +13,7 @@ export const useCalcStore = defineStore('calcStore', {
         materials: [],
         profiles: profiles,
         autoProfiles: [],
-        // totals: totals,
+        customDiscount: 0,
         additionals: [],
         defaultAdditionals: [],
         username: '',
@@ -273,6 +273,10 @@ export const useCalcStore = defineStore('calcStore', {
             this.additionals.forEach(additional => {
                 additional.amount = additional.amount < 0  ? 0 : additional.amount;
             });
+        },
+
+        markupPrice() {
+            return parseInt(this.noDiscountPrice() * (1 + this.customDiscount / 100));
         },
 
         noDiscountPrice() {
@@ -563,6 +567,6 @@ export const useCalcStore = defineStore('calcStore', {
             state.totals.totalPrice = materials_price + autoProfiles_price + additionals_price + profiles_price;
 
             return state.totals.totalPrice;
-        }
+        },
     }
 });

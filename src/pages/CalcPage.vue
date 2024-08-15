@@ -12,6 +12,7 @@ import ProfilesTable from "../components/ProfilesTable.vue";
 import AutoProfilesTable from "../components/AutoProfilesTable.vue";
 import SubmitBox from "../components/SubmitBox.vue";
 import PricingBlock from "../components/PricingBlock.vue";
+import OfferInfo from "../components/OfferInfo.vue";
 
 export default defineComponent({
   components: {
@@ -25,6 +26,7 @@ export default defineComponent({
     AutoProfilesTable,
     SubmitBox,
     PricingBlock,
+    OfferInfo,
   },
   setup() {
     const calcStore = useCalcStore();
@@ -44,14 +46,12 @@ export default defineComponent({
     <h1
       class="mb-4 text-2xl uppercase font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl lg:mb-8 print:hidden"
     >
-      Здравствуйте,
-      <span
-        class="text-transparent bg-clip-text bg-gradient-to-r to-yellow-400 from-orange-600"
-        >{{ calcStore.username }}</span
-      >!
+      Калькулятор
     </h1>
 
     <main>
+      <OfferInfo />
+
       <OpeningsTable />
 
       <MaterialsTable />

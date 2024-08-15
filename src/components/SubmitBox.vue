@@ -2,12 +2,40 @@
 import { useCalcStore } from "../stores/calcStore";
 
 const calcStore = useCalcStore();
+
+const dateObj = new Date();
+
+const currentDate = {
+  day: String(dateObj.getDate()).padStart(2, "0"),
+  month: String(dateObj.getMonth() + 1).padStart(2, "0"),
+  year: dateObj.getFullYear(),
+};
 </script>
 
 <template>
-  <h1 class="font-bold text-2xl hidden print:block">
-    Итого: {{ calcStore.totalPrice }} ₽
-  </h1>
+  <div class="hidden print:block">
+    <div class="flex justify-end">
+      <div class="text-right">
+        <h1 class="font-medium text-xl print:block">
+          Итого: <span class="font-bold">{{ calcStore.totalPrice }} ₽</span>
+        </h1>
+        <h1 class="font-medium print:block">
+          Розничная цена:
+          <span class="font-bold">{{ calcStore.noDiscountPrice() }} ₽</span>
+        </h1>
+        <h1 class="font-medium print:block">
+          С наценкой <span class="">{{ calcStore.customDiscount }}%</span>:
+          <span class="font-bold">{{ calcStore.markupPrice() }} ₽</span>
+        </h1>
+
+        <span class="text-sm"
+          >Дата:
+          {{ currentDate.day + "." + currentDate.month + "." + currentDate.year }}</span
+        >
+      </div>
+    </div>
+  </div>
+
   <div
     class="print:hidden fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 overflow-hidden bg-white border border-gray-200 rounded-full bottom-4 left-1/2 shadow-2xl"
   >

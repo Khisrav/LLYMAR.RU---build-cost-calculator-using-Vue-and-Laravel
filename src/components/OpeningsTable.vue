@@ -5,6 +5,17 @@ import ButtonTag from "./ButtonTag.vue";
 import InputTag from "./InputTag.vue";
 
 const calcStore = useCalcStore();
+
+const openingName = (openingType) => {
+  const openingNames = {
+    left: "Леввый проем",
+    right: "Правый проем",
+    center: "Центральный проем",
+    "inner-left": "Входная группа левая",
+    "inner-right": "Входная группа правая",
+  };
+  return openingNames[openingType];
+};
 </script>
 
 <template>
@@ -15,7 +26,9 @@ const calcStore = useCalcStore();
         >Добавить проем</ButtonTag
       >
     </div>
-    <div class="relative overflow-x-auto rounded-2xl shadow-2xl shadow-primary-200">
+    <div
+      class="relative overflow-x-auto rounded-2xl shadow-2xl shadow-primary-200 print:shadow-none"
+    >
       <table class="w-full text-sm text-left rtl:text-right text-gray-500">
         <thead class="text-xs text-primary-900 uppercase bg-primary-100">
           <tr>
@@ -39,10 +52,13 @@ const calcStore = useCalcStore();
               />
             </td>
             <td class="px-6 py-4 text-base font-semibold text-black">
+              <span class="hidden print:block font-bold">{{
+                openingName(calcStore.openings[index].type)
+              }}</span>
               <select
                 v-model="calcStore.openings[index].type"
                 @change="calcStore.changeOpeningType(index)"
-                class="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-54 p-2.5"
+                class="print:hidden bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-54 p-2.5"
               >
                 <option value="left">Левый проем</option>
                 <option value="right">Правый проем</option>
@@ -54,14 +70,16 @@ const calcStore = useCalcStore();
             <td class="px-6 py-4 text-center">
               <span
                 v-if="opening.type == 'inner-left' || opening.type == 'inner-right'"
-                >{{ opening.doors }}</span
+                class="font-bold"
+                >{{ opening.doors }} шт.</span
               >
               <!-- <InputTag type="number" v-model="calc.openings[index].doors" @change="calculatePrice()" class="text-center"/> -->
-              <div v-else class="relative print:hidden flex justify-center">
+              <div v-else class="relative flex justify-center">
+                <span class="hidden print:block font-bold">{{ opening.doors }} шт.</span>
                 <select
                   v-model="calcStore.openings[index].doors"
                   @change="calcStore.calculatePrice()"
-                  class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                  class="print:hidden w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
                 >
                   <option
                     v-if="opening.type != 'center'"
@@ -77,7 +95,10 @@ const calcStore = useCalcStore();
               </div>
             </td>
             <td class="px-6 py-4">
-              <div class="inline-flex w-48" role="group">
+              <span class="hidden print:block font-bold"
+                >{{ opening.width }} × {{ opening.height }}</span
+              >
+              <div class="inline-flex w-48 print:hidden" role="group">
                 <InputTag
                   type="number"
                   v-model="calcStore.openings[index].width"
