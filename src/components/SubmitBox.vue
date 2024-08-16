@@ -2,14 +2,6 @@
 import { useCalcStore } from "../stores/calcStore";
 
 const calcStore = useCalcStore();
-
-const dateObj = new Date();
-
-const currentDate = {
-  day: String(dateObj.getDate()).padStart(2, "0"),
-  month: String(dateObj.getMonth() + 1).padStart(2, "0"),
-  year: dateObj.getFullYear(),
-};
 </script>
 
 <template>
@@ -17,17 +9,8 @@ const currentDate = {
     <div class="flex justify-end">
       <div class="text-right">
         <h1 class="font-medium text-xl print:block">
-          Итого: <span class="font-bold">{{ calcStore.totalPrice }} ₽</span>
+          Итого: <span class="font-bold">{{ calcStore.markupPrice() }} ₽</span>
         </h1>
-        <h1 class="font-medium print:block">
-          С наценкой <span class="">{{ calcStore.customDiscount }}%</span>:
-          <span class="font-bold">{{ calcStore.markupPrice() }} ₽</span>
-        </h1>
-
-        <!-- <span class="text-sm"
-          >Дата:
-          {{ currentDate.day + "." + currentDate.month + "." + currentDate.year }}</span
-        > -->
       </div>
     </div>
   </div>
