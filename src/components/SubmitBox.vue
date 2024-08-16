@@ -20,18 +20,14 @@ const currentDate = {
           Итого: <span class="font-bold">{{ calcStore.totalPrice }} ₽</span>
         </h1>
         <h1 class="font-medium print:block">
-          Розничная цена:
-          <span class="font-bold">{{ calcStore.noDiscountPrice() }} ₽</span>
-        </h1>
-        <h1 class="font-medium print:block">
           С наценкой <span class="">{{ calcStore.customDiscount }}%</span>:
           <span class="font-bold">{{ calcStore.markupPrice() }} ₽</span>
         </h1>
 
-        <span class="text-sm"
+        <!-- <span class="text-sm"
           >Дата:
           {{ currentDate.day + "." + currentDate.month + "." + currentDate.year }}</span
-        >
+        > -->
       </div>
     </div>
   </div>

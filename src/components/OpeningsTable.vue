@@ -20,7 +20,7 @@ const openingName = (openingType) => {
 
 <template>
   <div class="block">
-    <div class="flex justify-between py-4">
+    <div class="flex justify-between py-4 print:py-0">
       <h3 class="text-xl lg:text-2xl uppercase font-bold">Проемы</h3>
       <ButtonTag type="button" @click="calcStore.addOpening()" class="print:hidden"
         >Добавить проем</ButtonTag
@@ -45,13 +45,13 @@ const openingName = (openingType) => {
             :key="index"
             class="bg-white border-b hover:bg-gray-50"
           >
-            <td scope="row" class="px-6 py-4">
+            <td scope="row" class="px-6 py-4 print:py-2">
               <img
                 :src="calcStore.opening_images[opening.type]"
-                class="max-w-20 md:max-w-60"
+                class="max-w-20 md:max-w-60 print:min-w-40"
               />
             </td>
-            <td class="px-6 py-4 text-base font-semibold text-black">
+            <td class="px-6 py-4 print:py-2 text-base font-semibold text-black">
               <span class="hidden print:block font-bold">{{
                 openingName(calcStore.openings[index].type)
               }}</span>
@@ -67,7 +67,7 @@ const openingName = (openingType) => {
                 <option value="inner-right">Входная группа правая</option>
               </select>
             </td>
-            <td class="px-6 py-4 text-center">
+            <td class="px-6 py-4 print:py-2 text-center">
               <span
                 v-if="opening.type == 'inner-left' || opening.type == 'inner-right'"
                 class="font-bold"
@@ -94,7 +94,7 @@ const openingName = (openingType) => {
                 </select>
               </div>
             </td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 print:py-2">
               <span class="hidden print:block font-bold"
                 >{{ opening.width }} × {{ opening.height }}</span
               >
@@ -113,7 +113,7 @@ const openingName = (openingType) => {
                 />
               </div>
             </td>
-            <td class="px-6 py-4 print:hidden">
+            <td class="px-6 py-4 print:py-2 print:hidden">
               <button
                 type="button"
                 @click="calcStore.removeOpening(index)"

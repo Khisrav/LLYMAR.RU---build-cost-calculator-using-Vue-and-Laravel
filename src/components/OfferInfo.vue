@@ -7,7 +7,7 @@ export default {
     mask,
   },
   setup() {
-    const user = JSON.parse(sessionStorage.getItem("user"));
+    let user = JSON.parse(sessionStorage.getItem("user"));
 
     if (!user) {
       user = {
@@ -38,15 +38,15 @@ export default {
 </script>
 
 <template>
-  <div class="block mb-4">
-    <h1 class="text-center font-bold text-3xl hidden print:block">
+  <div class="block mb-2">
+    <h1 class="text-center font-bold text-2xl hidden print:block">
       Коммерческое предложение
     </h1>
-    <h2 class="text-center font-bold text-xl mb-8 hidden print:block">
+    <h2 class="text-center font-semibold text-base mb-8 hidden print:block">
       на поставку безрамной системы остекления
     </h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="p-4 border border-gray-200 rounded-xl">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="p-3 border border-gray-200 rounded-xl">
         <h3 class="text-center font-bold">Информация о клиенте</h3>
         <p class="hidden print:block">
           Клиент: <span class="float-right">{{ client.fullname }}</span>
@@ -100,9 +100,9 @@ export default {
       </div>
 
       <div class="p-4 border border-gray-200 rounded-xl">
-        <h3 class="text-center font-bold">Информация о дилере</h3>
+        <h3 class="text-center font-bold">Информация о производителе</h3>
         <p>
-          Дилер: <span class="float-right">{{ dealer.fullname }}</span>
+          Производитель: <span class="float-right">{{ dealer.fullname }}</span>
         </p>
         <p>
           Организация: <span class="float-right">{{ dealer.organization }}</span>
@@ -119,9 +119,6 @@ export default {
 </template>
 
 <style scoped>
-.float-right {
-  font-weight: bold;
-}
 label {
   margin-top: 8px;
 }
