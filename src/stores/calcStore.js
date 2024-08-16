@@ -135,6 +135,9 @@ export const useCalcStore = defineStore('calcStore', {
                     }
                 }
             });
+
+            //delivery
+            this.additionals.find(a => a.vendor_code == 1234).amount = 1;
         },
 
         async getUserData() {
@@ -263,9 +266,10 @@ export const useCalcStore = defineStore('calcStore', {
                 } else {
                     additional.total = 0;
                 }
-                // if (additional.is_checkable && !additional.checked) {
-                //     additional.total = 0;
-                // }
+                
+                if (additional.vendor_code == 1234) {
+                    additional.total = additional.price;
+                }
             });
         },
 
@@ -537,7 +541,9 @@ export const useCalcStore = defineStore('calcStore', {
             }
         },
         printOrder() {
+            document.title = 'LLYMAR.RU';
             print();
+            document.title = 'Калькулятор - LLYMAR.RU';
         },
         toast(bln) {
             if (bln == 401) {

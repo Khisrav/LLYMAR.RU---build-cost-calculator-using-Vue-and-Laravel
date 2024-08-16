@@ -30,20 +30,20 @@ const calcStore = useCalcStore();
           id="labels-range-input"
           type="range"
           v-model="calcStore.customDiscount"
-          min="0"
-          max="100"
+          min="-50"
+          max="50"
           step="1"
           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
         />
         <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6"
-          >0%</span
+          >-50%</span
         >
         <span
           class="text-sm text-gray-500 dark:text-gray-400 absolute start-1/2 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6"
-          >50%</span
+          >0%</span
         >
         <span class="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6"
-          >100%</span
+          >50%</span
         >
       </div>
       <p class="font-normal text-gray-700 mt-3">

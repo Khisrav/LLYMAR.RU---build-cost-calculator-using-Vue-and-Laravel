@@ -32,10 +32,10 @@ const openingName = (openingType) => {
       <table class="w-full text-sm text-left rtl:text-right text-gray-500">
         <thead class="text-xs text-primary-900 uppercase bg-primary-100">
           <tr>
-            <th scope="col" class="px-6 py-3">Картинка</th>
-            <th scope="col" class="px-6 py-3">Вид проема</th>
-            <th scope="col" class="px-6 py-3">Кол-во створок</th>
-            <th scope="col" class="px-6 py-3 normal-case">Ш x В (в мм)</th>
+            <th scope="col" class="px-6 py-3 print:px-0">Картинка</th>
+            <th scope="col" class="px-6 py-3 print:px-0">Вид проема</th>
+            <th scope="col" class="px-6 py-3 print:px-0">Кол-во створок</th>
+            <th scope="col" class="px-6 py-3 print:px-0 normal-case">Ш x В (в мм)</th>
             <th scope="col" class="px-6 py-3 print:hidden">Действие</th>
           </tr>
         </thead>
@@ -45,13 +45,15 @@ const openingName = (openingType) => {
             :key="index"
             class="bg-white border-b hover:bg-gray-50"
           >
-            <td scope="row" class="px-6 py-4 print:py-2">
+            <td scope="row" class="px-6 print:px-0 py-4 print:py-2">
               <img
                 :src="calcStore.opening_images[opening.type]"
                 class="max-w-20 md:max-w-60 print:min-w-40"
               />
             </td>
-            <td class="px-6 py-4 print:py-2 text-base font-semibold text-black">
+            <td
+              class="px-6 print:px-0 py-4 print:py-2 text-base font-semibold text-black"
+            >
               <span class="hidden print:block font-bold">{{
                 openingName(calcStore.openings[index].type)
               }}</span>
@@ -67,7 +69,7 @@ const openingName = (openingType) => {
                 <option value="inner-right">Входная группа правая</option>
               </select>
             </td>
-            <td class="px-6 py-4 print:py-2 text-center">
+            <td class="px-6 print:px-0 py-4 print:py-2 text-center">
               <span
                 v-if="opening.type == 'inner-left' || opening.type == 'inner-right'"
                 class="font-bold"
@@ -94,7 +96,7 @@ const openingName = (openingType) => {
                 </select>
               </div>
             </td>
-            <td class="px-6 py-4 print:py-2">
+            <td class="px-6 print:px-0 py-4 print:py-2">
               <span class="hidden print:block font-bold"
                 >{{ opening.width }} × {{ opening.height }}</span
               >
@@ -113,7 +115,7 @@ const openingName = (openingType) => {
                 />
               </div>
             </td>
-            <td class="px-6 py-4 print:py-2 print:hidden">
+            <td class="px-6 print:px-0 py-4 print:py-2 print:hidden">
               <button
                 type="button"
                 @click="calcStore.removeOpening(index)"
