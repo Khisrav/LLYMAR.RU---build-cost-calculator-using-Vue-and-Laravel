@@ -346,7 +346,7 @@ export const useCalcStore = defineStore('calcStore', {
                             break;
                         case "L16":
                             autoProfile.amount +=
-                                (tempCentral ? tempCentral - 2 : 0) +
+                                (tempCentral ? tempCentral / 2 : 0) +
                                 (tempLeft ? 1 : 0) + tempRight +
                                 (tempInnerLeft ? 1 : 0) +
                                 (tempInnerRight ? 2 : 0);
@@ -367,7 +367,7 @@ export const useCalcStore = defineStore('calcStore', {
                             autoProfile.amount +=
                                 (tempLeft ? tempLeft : 0) +
                                 (tempRight ? 1 : 0) +
-                                (tempCentral ? tempCentral - 2 : 0) +
+                                (tempCentral ? tempCentral / 2 : 0) +
                                 (tempInnerLeft ? 2 : 0) +
                                 (tempInnerRight ? 1 : 0);
                             break;
