@@ -277,6 +277,12 @@ export const useCalcStore = defineStore('calcStore', {
             this.additionals.forEach(additional => {
                 additional.amount = additional.amount < 0  ? 0 : additional.amount;
             });
+
+            //delivery price
+            const delivery = this.additionals.find(a => a.vendor_code == 1234);
+            if (!delivery.price) {
+                delivery.price = 0;
+            }
         },
 
         markupPrice() {
