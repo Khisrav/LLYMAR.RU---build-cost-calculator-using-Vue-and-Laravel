@@ -38,7 +38,10 @@ const calcStore = useCalcStore();
             :key="item.id"
             class="bg-white border-b hover:bg-gray-50"
             :class="{
-              'print:hidden': item.amount == 0 || (item.is_checkable && !item.checked),
+              'print:hidden':
+                item.amount == 0 ||
+                (item.is_checkable && !item.checked) ||
+                (item.vendor_code == 1234 && item.price == 0),
             }"
           >
             <td class="px-6 py-4 text-black print:hidden">L{{ item.vendor_code }}</td>
