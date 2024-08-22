@@ -1,40 +1,36 @@
-<script>
+<script setup>
 import { reactive } from "vue";
 import { mask } from "vue-the-mask";
 
-export default {
-  directives: {
-    mask,
-  },
-  setup() {
-    let user = JSON.parse(sessionStorage.getItem("user"));
+const vMask = mask;
+let user = JSON.parse(sessionStorage.getItem("user"));
 
-    if (!user) {
-      user = {
-        name: "",
-        company: "",
-        phone: "",
-      };
-    }
+if (!user) {
+  user = {
+    name: "",
+    company: "",
+    phone: "",
+  };
+}
 
-    const dealer = reactive({
-      fullname: user.name,
-      organization: user.company,
-      phone: user.phone,
-    });
+const dealer = reactive({
+  fullname: user.name,
+  organization: user.company,
+  phone: user.phone,
+});
 
-    const client = reactive({
-      fullname: "",
-      address: "",
-      phone: "",
-    });
+const client = reactive({
+  fullname: "",
+  address: "",
+  phone: "",
+});
 
-    return {
-      dealer,
-      client,
-    };
-  },
-};
+setTimeout(() => {
+  user = JSON.parse(sessionStorage.getItem("user"));
+  dealer.fullname = user.name;
+  dealer.organization = user.company;
+  dealer.phone = user.phone;
+}, 2000);
 </script>
 
 <template>

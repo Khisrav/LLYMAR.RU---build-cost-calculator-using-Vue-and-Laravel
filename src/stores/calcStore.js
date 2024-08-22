@@ -217,10 +217,10 @@ export const useCalcStore = defineStore('calcStore', {
             const doorsAmount = (this.openings.reduce((acc, o) => acc + o.doors, 0));
 
             this.additionals.forEach(additional => {
-                if (additional.is_checkable) {
+                if (additional.is_checkable || [200, 210].includes(additional.vendor_code)) {
                     additional.amount = openingsWH.toFixed(3);
                 }
-                if ([200, 210, 220, 230].includes(additional.vendor_code)) {
+                if ([220, 230].includes(additional.vendor_code)) {
                     additional.amount = doorsAmount;
                 }
             });

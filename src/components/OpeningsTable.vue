@@ -8,7 +8,7 @@ const calcStore = useCalcStore();
 
 const openingName = (openingType) => {
   const openingNames = {
-    left: "Леввый проем",
+    left: "Левый проем",
     right: "Правый проем",
     center: "Центральный проем",
     "inner-left": "Входная группа левая",
