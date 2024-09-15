@@ -8,6 +8,7 @@ const calcStore = useCalcStore();
   <div class="hidden print:block">
     <div class="flex justify-end">
       <div class="text-right">
+        <p>Доставка: {{ calcStore.delivery }} ₽</p>
         <h1 class="font-medium text-xl print:block">
           Итого: <span class="font-bold">{{ calcStore.markupPrice() }} ₽</span>
         </h1>

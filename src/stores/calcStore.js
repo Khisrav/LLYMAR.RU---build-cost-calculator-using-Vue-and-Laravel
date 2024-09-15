@@ -10,6 +10,7 @@ export const useCalcStore = defineStore('calcStore', {
         openings: openings,
         opening_images: opening_images,
         material_type: material_type,
+        separateOpenings: [],
         materials: [],
         profiles: profiles,
         autoProfiles: [],
@@ -31,6 +32,7 @@ export const useCalcStore = defineStore('calcStore', {
             totalPrice: 0,
         },
         comment: '',
+        delivery: 0,
         telegramBotToken: TELEGRAM_TOKEN,
         chatId: CHAT_ID,
         selectedGlassType: 0,
@@ -97,7 +99,7 @@ export const useCalcStore = defineStore('calcStore', {
                 } else if (
                     vendor.vendor_code == 6 ||
                     (vendor.vendor_code >= 12 && vendor.vendor_code <= 22) ||
-                    vendor.vendor_code == 26
+                    vendor.vendor_code == 26 || vendor.vendor_code == 2000 || vendor.vendor_code == 2001
                 ) {
                     this.autoProfiles[temp_indexes[`L${vendor.vendor_code}`]] = {
                         vendor_code: `L${vendor.vendor_code}`,
@@ -124,6 +126,20 @@ export const useCalcStore = defineStore('calcStore', {
                         total: 0,
                     });
                 }
+                
+                if (vendor.vendor_code == 2000 || vendor.vendor_code == 2001) {
+                    this.separateOpenings.push({
+                        vendor_code: `L${vendor.vendor_code}`,
+                        name: vendor.name,
+                        img: STORAGE_LINK + vendor.img,
+                        type: vendor.type,
+                        unit: vendor.unit,
+                        price: parseInt(vendor.price),
+                        discount: discountRate(vendor.discount || this.discount),
+                        amount: 1,
+                        total: 0,
+                    })
+                }
             });
 
             this.additionals.forEach(additional => {
@@ -135,9 +151,6 @@ export const useCalcStore = defineStore('calcStore', {
                     }
                 }
             });
-
-            //delivery
-            this.additionals.find(a => a.vendor_code == 1234).amount = 1;
         },
 
         async getUserData() {
@@ -172,10 +185,14 @@ export const useCalcStore = defineStore('calcStore', {
             } else if (["right", "left"].includes(this.openings[index].type)) {
                 this.openings[index].doors = 2;
                 if (this.openings[index].type == 'right') this.openings[index].name = 'Правый проем';
-            } else {
+            } else if (["inner-right", "inner-left"].includes(this.openings[index].type)) {
                 this.openings[index].doors = 3;
                 if (this.openings[index].type == 'inner-right') this.openings[index].name = 'Входная группа правая';
                 else this.openings[index].name = 'Входная группа левая';
+            } else {
+                this.openings[index].doors = 0;
+                if (this.openings[index].type == 'blind-glazing') this.openings[index].name = 'Глухое остекление';
+                else this.openings[index].name = 'Треугольник';
             }
 
             this.calculatePrice();
@@ -191,6 +208,10 @@ export const useCalcStore = defineStore('calcStore', {
 
             this.calculatePrice();
         },
+        
+        openingsWH() {
+            return (this.openings.reduce((acc, o) => !['triangle', 'blind-glazing'].includes(o.type) ? acc + (o.width * o.height) / 1000000 : acc, 0))
+        },
 
         updateVendorsData() {
             let lrAmount = 0, cAmount = 0, onlyCentralAmount = 0;
@@ -200,7 +221,7 @@ export const useCalcStore = defineStore('calcStore', {
                 else if (opening.type == 'center') {
                     cAmount += opening.doors * 2 - 4;
                     onlyCentralAmount++;
-                } else {
+                } else if (opening.type == 'inner-left' || opening.type == 'inner-right') {
                     innerLAmount += (opening.type == 'inner-left' ? 1 : 0);
                     innerRAmount += (opening.type == 'inner-right' ? 1 : 0);
                 }
@@ -213,12 +234,12 @@ export const useCalcStore = defineStore('calcStore', {
                 this.profiles[`L${l}`].amount = this.profiles[`L${l - 1}`].amount;
             });
 
-            const openingsWH = (this.openings.reduce((acc, o) => acc + o.width * o.height / 1000000, 0));
+            const _openingsWH = this.openingsWH();
             const doorsAmount = (this.openings.reduce((acc, o) => acc + o.doors, 0));
 
             this.additionals.forEach(additional => {
                 if (additional.is_checkable || [200, 210].includes(additional.vendor_code)) {
-                    additional.amount = openingsWH.toFixed(3);
+                    additional.amount = _openingsWH.toFixed(3);
                 }
                 if ([220, 230].includes(additional.vendor_code)) {
                     additional.amount = doorsAmount;
@@ -240,7 +261,6 @@ export const useCalcStore = defineStore('calcStore', {
             if (this.selectedGlassType) {
                 this.additionals.find(a => a.vendor_code == this.selectedGlassType).checked = true;
             }
-            // this.additionals.find(a => a.vendor_code == this.selectedProfile).checked = true;
         },
 
         calculatePrice() {
@@ -266,23 +286,35 @@ export const useCalcStore = defineStore('calcStore', {
                 } else {
                     additional.total = 0;
                 }
-                
-                if (additional.vendor_code == 1234) {
-                    additional.total = additional.price;
-                }
             });
+            
+            const someShit = {'triangle': 2001, 'blind-glazing': 2000};
+            this.separateOpenings.forEach(sO => {
+                if (!this.selectedGlassType) return;
+                sO.price = 0;
+                this.openings.forEach(o => {
+                    if (someShit[o.type] != parseInt(sO.vendor_code.replace(/\D/g, ""))) return;
+                    
+                    const oArea = ((o.width * o.height) / 1000000);
+                    const oPrice = parseInt(o.doors) ? 8700 : 7700;
+                    
+                    const glass = this.additionals.find(a => a.vendor_code == this.selectedGlassType)
+                    const mountingPrice = this.additionals.find(a => a.vendor_code == 240).price
+                    
+                    const formula = oArea * oPrice + oArea * glass.price + oArea * mountingPrice;
+                    
+                    console.log(oArea, oPrice, glass.price, mountingPrice, formula)
+                    
+                    o.price = parseInt(formula);
+                    sO.price += parseInt(formula);
+                })
+            })
         },
 
         validateAdditionals() {
             this.additionals.forEach(additional => {
                 additional.amount = additional.amount < 0  ? 0 : additional.amount;
             });
-
-            //delivery price
-            const delivery = this.additionals.find(a => a.vendor_code == 1234);
-            if (!delivery.price) {
-                delivery.price = 0;
-            }
         },
 
         markupPrice() {
@@ -305,11 +337,10 @@ export const useCalcStore = defineStore('calcStore', {
             });
 
             this.additionals.forEach(additional => {
-                // if (!additional.is_checkable || additional.is_checkable && additional.checked) {
-                //     tempPrice += additional.total;
-                // }
                 tempPrice += additional.total;
             });
+            
+            this.separateOpenings.forEach(sO => tempPrice += sO.price);
 
             return tempPrice;
         },
@@ -430,20 +461,31 @@ export const useCalcStore = defineStore('calcStore', {
         collectTotals() {
             this.totals.materialType = this.material_type;
 
+            this.totals.vendorCodes = {};
+            
             //collectin openings data
             this.totals.openings = [];
             this.openings.forEach((opening) => {
                 this.totals.openings.push({
-                type: opening.type,
-                name: opening.name,
-                doors: parseInt(opening.doors),
-                width: parseInt(opening.width),
-                height: parseInt(opening.height),
+                    type: opening.type,
+                    name: opening.name,
+                    doors: parseInt(opening.doors),
+                    width: parseInt(opening.width),
+                    height: parseInt(opening.height),
                 });
             });
+            
+            this.separateOpenings.forEach(sO => {
+                const vc = parseInt(sO.vendor_code.replace(/\D/g, ""))
+                this.totals.vendorCodes[vc] = {
+                    id: vc,
+                    amount: sO.amount,
+                    price: sO.price,
+                    discount: sO.discount,
+                }
+            })
 
             //collecting vendor codes amount data
-            this.totals.vendorCodes = {};
             this.materials.forEach((material) => {
                 if (material.type == this.material_type && parseInt(material.amount) > 0) {
                     let vendor_code = parseInt(material.vendor_code.replace(/\D/g, ""));
@@ -499,6 +541,7 @@ export const useCalcStore = defineStore('calcStore', {
             });
 
             this.totals.comment = this.comment;
+            this.totals.delivery = this.delivery;
         },
 
         async sendTotals() {
@@ -514,6 +557,7 @@ export const useCalcStore = defineStore('calcStore', {
                         vendor_codes: this.totals.vendorCodes,
                         additionals: this.totals.additionals,
                         comment: this.totals.comment,
+                        delivery: this.totals.delivery,
                     },
                     {
                         headers: {
@@ -565,6 +609,7 @@ export const useCalcStore = defineStore('calcStore', {
         totalPrice: (state) => {
             const materials_price = state.materials.reduce((acc, material) => acc + material.total, 0);
             const autoProfiles_price = state.autoProfiles.reduce((acc, autoProfile) => acc + autoProfile.total, 0);
+            
             const additionals_price = state.additionals.reduce((acc, additional) => {
                 if (!additional.is_checkable || additional.is_checkable && additional.checked) {
                     return acc + additional.total
@@ -575,8 +620,10 @@ export const useCalcStore = defineStore('calcStore', {
 
             let profiles_price = 0;
             Object.keys(state.profiles).forEach(key => profiles_price += state.profiles[key].total);
+            
+            const sO_price = state.separateOpenings.reduce((acc, sO) => acc + sO.price, 0);
 
-            state.totals.totalPrice = materials_price + autoProfiles_price + additionals_price + profiles_price;
+            state.totals.totalPrice = materials_price + autoProfiles_price + additionals_price + profiles_price + state.delivery + sO_price;
 
             return state.totals.totalPrice;
         },

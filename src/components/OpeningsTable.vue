@@ -1,19 +1,24 @@
 <script setup>
+import { ref } from "vue";
 import { useCalcStore } from "../stores/calcStore";
 
 import ButtonTag from "./ButtonTag.vue";
 import InputTag from "./InputTag.vue";
 
 const calcStore = useCalcStore();
+const selectedSeparateOpening = ref(null);
+
+const openingNames = {
+  left: "Левый проем",
+  right: "Правый проем",
+  center: "Центральный проем",
+  "inner-left": "Входная группа левая",
+  "inner-right": "Входная группа правая",
+  "blind-glazing": "Глухое остекление",
+  triangle: "Треугольник",
+};
 
 const openingName = (openingType) => {
-  const openingNames = {
-    left: "Левый проем",
-    right: "Правый проем",
-    center: "Центральный проем",
-    "inner-left": "Входная группа левая",
-    "inner-right": "Входная группа правая",
-  };
   return openingNames[openingType];
 };
 </script>
@@ -62,11 +67,9 @@ const openingName = (openingType) => {
                 @change="calcStore.changeOpeningType(index)"
                 class="print:hidden bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-54 p-2.5"
               >
-                <option value="left">Левый проем</option>
-                <option value="right">Правый проем</option>
-                <option value="center">Центральный проем</option>
-                <option value="inner-left">Входная группа левая</option>
-                <option value="inner-right">Входная группа правая</option>
+                <option v-for="(name, key) in openingNames" :key="key" :value="key">
+                  {{ name }}
+                </option>
               </select>
             </td>
             <td class="px-6 print:px-0 py-4 print:py-2 text-center">
@@ -75,25 +78,34 @@ const openingName = (openingType) => {
                 class="font-bold"
                 >{{ opening.doors }} шт.</span
               >
-              <!-- <InputTag type="number" v-model="calc.openings[index].doors" @change="calculatePrice()" class="text-center"/> -->
               <div v-else class="relative flex justify-center">
                 <span class="hidden print:block font-bold">{{ opening.doors }} шт.</span>
-                <select
-                  v-model="calcStore.openings[index].doors"
-                  @change="calcStore.calculatePrice()"
-                  class="print:hidden w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-                >
-                  <option
-                    v-if="opening.type != 'center'"
-                    v-for="i in [2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                    :value="i"
+                <div>
+                  <select
+                    v-model="calcStore.openings[index].doors"
+                    @change="calcStore.calculatePrice()"
+                    class="print:hidden w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
                   >
-                    {{ i }}
-                  </option>
-                  <option v-else v-for="i in [4, 6, 8, 10, 12]" :value="i">
-                    {{ i }}
-                  </option>
-                </select>
+                    <option
+                      v-if="opening.type != 'center'"
+                      v-for="i in ['triangle', 'blind-glazing'].includes(opening.type)
+                        ? [0, 1]
+                        : [2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                      :value="i"
+                    >
+                      {{ i }}
+                    </option>
+                    <option v-else v-for="i in [4, 6, 8, 10, 12]" :value="i">
+                      {{ i }}
+                    </option>
+                  </select>
+                  <span
+                    v-if="['triangle', 'blind-glazing'].includes(opening.type)"
+                    class="block font-bold pt-3"
+                  >
+                    {{ opening.price }}₽
+                  </span>
+                </div>
               </div>
             </td>
             <td class="px-6 print:px-0 py-4 print:py-2">

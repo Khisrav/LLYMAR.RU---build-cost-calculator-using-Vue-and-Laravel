@@ -1,17 +1,20 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive, watchEffect } from "vue";
 import { mask } from "vue-the-mask";
 
 const vMask = mask;
-let user = JSON.parse(sessionStorage.getItem("user"));
 
-if (!user) {
-  user = {
-    name: "",
-    company: "",
-    phone: "",
-  };
-}
+const user = reactive({
+  name: "",
+  company: "",
+  phone: "",
+});
+
+// Retrieve and set user data from sessionStorage at component mount
+const storedUser = JSON.parse(sessionStorage.getItem("user")) || {};
+
+// If user exists in sessionStorage, update the reactive user object
+Object.assign(user, storedUser);
 
 const dealer = reactive({
   fullname: user.name,
@@ -25,13 +28,24 @@ const client = reactive({
   phone: "",
 });
 
-setTimeout(() => {
-  user = JSON.parse(sessionStorage.getItem("user"));
+// Watch for changes in user object and update dealer reactively
+watchEffect(() => {
   dealer.fullname = user.name;
   dealer.organization = user.company;
   dealer.phone = user.phone;
+});
+
+// Optional: Re-check sessionStorage every 2 seconds (or upon any triggering events)
+setTimeout(() => {
+  const updatedUser = JSON.parse(sessionStorage.getItem("user"));
+  if (updatedUser) {
+    Object.assign(user, updatedUser); // Reactively update user object
+  }
 }, 2000);
+
 </script>
+
+
 
 <template>
   <div class="block mb-2">

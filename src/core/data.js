@@ -18,6 +18,8 @@ export const opening_images = {
     center: '/assets/openings-center.jpg',
     'inner-left': '/assets/openings-inner-left.jpg',
     'inner-right': '/assets/openings-inner-right.jpg',
+    'blind-glazing': '/assets/openings-blind-glazing.jpg',
+    triangle: '/assets/openings-triangle.jpg',
 };
 export let calc = {
     openings: [
@@ -53,34 +55,6 @@ export const openings = [
         width: 3000,
         height: 2700
     },
-    // {
-    //     type: 'right',
-    //     name: 'Правый проем',
-    //     doors: 2,
-    //     width: 3000,
-    //     height: 2700
-    // },
-    // {
-    //     type: 'center', 
-    //     name: 'Центральный проем',
-    //     doors: 4,
-    //     width: 3000,
-    //     height: 2700
-    // },
-    // {
-    //     type: 'inner-left', 
-    //     name: 'Левый внутренний проем',
-    //     doors: 3,
-    //     width: 3000,
-    //     height: 2700
-    // },
-    // {
-    //     type: 'inner-left', 
-    //     name: 'Правый внутренний проем',
-    //     doors: 3,
-    //     width: 3000,
-    //     height: 2700
-    // },
 ];
 
 export let material_type = 'aluminium';

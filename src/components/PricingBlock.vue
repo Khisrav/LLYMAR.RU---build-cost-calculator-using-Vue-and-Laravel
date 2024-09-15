@@ -2,6 +2,14 @@
 import { useCalcStore } from "../stores/calcStore";
 
 const calcStore = useCalcStore();
+
+const deafArea = () => {
+  return calcStore.openings.reduce((acc, val) => {
+    if (!["triangle", "blind-glazing"].includes(val.type)) return acc;
+
+    return acc + (val.width * val.height) / 1000000;
+  }, 0);
+};
 </script>
 
 <template>
@@ -47,9 +55,39 @@ const calcStore = useCalcStore();
         >
       </div>
       <p class="font-normal text-gray-700 mt-3">
+        Цена с наценкой на м<sup>2</sup>:
+        <span class="float-right font-semibold"
+          >{{ parseInt(calcStore.markupPrice() / calcStore.openingsWH()) }} ₽/м<sup
+            >2</sup
+          ></span
+        >
+      </p>
+      <p class="font-normal text-gray-700 mt-3">
         Цена с наценкой <b>{{ calcStore.customDiscount }}%</b>:
         <span class="float-right font-semibold">{{ calcStore.markupPrice() }} ₽</span>
       </p>
+      <p class="font-normal text-gray-700 mt-3">
+        Площадь глухих проемов:
+        <span class="float-right font-semibold"
+          >{{ deafArea().toFixed(3) }} м<sup>2</sup></span
+        >
+      </p>
+      <div class="font-normal text-gray-700 mt-3 flex justify-between items-center">
+        <span> Доставка: </span>
+        <div class="flex">
+          <input
+            type="number"
+            min="0"
+            v-model="calcStore.delivery"
+            class="rounded-none rounded-e-0 rounded-s-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-24 text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
+          <span
+            class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-md border-gray-300 border-s-0 rounded-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600"
+          >
+            ₽
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </template>

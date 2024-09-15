@@ -1,4 +1,5 @@
 <script>
+//LoginPage.vue
 import ButtonTag from "../components/ButtonTag.vue";
 import InputTag from "../components/InputTag.vue";
 import HeaderLayout from "../layouts/HeaderLayout.vue";
@@ -21,7 +22,8 @@ export default {
   },
   mounted() {
     const token = sessionStorage.getItem("token");
-    if (token) {
+    const userInfo = sessionStorage.getItem('user');
+    if (token && userInfo) {
       this.$router.push("/user/calculator");
     }
   },
@@ -39,9 +41,12 @@ export default {
 
       try {
         const response = await login(this.email, this.password);
+        
+        console.log(response);
 
         if (response && response.access_token) {
           sessionStorage.setItem("token", response.access_token);
+          // sessionStorage.setItem("user", JSON.stringify(response.user)); // Store user information
           this.$router.push("/user/calculator");
         } else {
           this.displayError = true;
