@@ -21,6 +21,15 @@ const openingNames = {
 const openingName = (openingType) => {
   return openingNames[openingType];
 };
+
+const dunnoHowToNameIt = (opening) => {
+  if (["triangle", "blind-glazing"].includes(opening.type)) {
+    const _temp = ["Уголок", "Зажимной профиль"];
+    return _temp[opening.doors];
+  } else {
+    return `${opening.doors} шт.`;
+  }
+};
 </script>
 
 <template>
@@ -79,7 +88,9 @@ const openingName = (openingType) => {
                 >{{ opening.doors }} шт.</span
               >
               <div v-else class="relative flex justify-center">
-                <span class="hidden print:block font-bold">{{ opening.doors }} шт.</span>
+                <span class="hidden print:block font-bold">{{
+                  dunnoHowToNameIt(opening)
+                }}</span>
                 <div>
                   <select
                     v-model="calcStore.openings[index].doors"
@@ -101,7 +112,7 @@ const openingName = (openingType) => {
                   </select>
                   <span
                     v-if="['triangle', 'blind-glazing'].includes(opening.type)"
-                    class="block font-bold pt-3"
+                    class="block font-bold pt-3 print:hidden"
                   >
                     {{ opening.price }}₽
                   </span>

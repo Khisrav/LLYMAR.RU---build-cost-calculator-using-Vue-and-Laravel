@@ -10,6 +10,12 @@ const deafArea = () => {
     return acc + (val.width * val.height) / 1000000;
   }, 0);
 };
+
+const checkEmpty = (event) => {
+  if (event.target.value === "") {
+    this.calcStore.delivery = 0;
+  }
+};
 </script>
 
 <template>
@@ -78,6 +84,7 @@ const deafArea = () => {
           <input
             type="number"
             min="0"
+            @input="checkEmpty"
             v-model="calcStore.delivery"
             class="rounded-none rounded-e-0 rounded-s-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-24 text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
