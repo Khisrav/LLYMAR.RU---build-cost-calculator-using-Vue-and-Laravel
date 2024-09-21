@@ -13,7 +13,7 @@ const deafArea = () => {
 
 const checkEmpty = (event) => {
   if (event.target.value === "") {
-    this.calcStore.delivery = 0;
+    calcStore.delivery = 0;
   }
 };
 </script>
