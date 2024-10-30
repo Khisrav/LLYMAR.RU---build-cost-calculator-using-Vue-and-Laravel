@@ -1,11 +1,7 @@
 import "pdfmake/build/pdfmake";
-// import "pdfmake/build/vfs_fonts"; // Use named import for pdfFonts
 import axios from "axios";
-// import RobotoRegularNormal from "../core/Roboto-Regular-normal";
+import { API_BASE_URL } from "../core/config";
 
-// pdfMake.vfs = pdfFonts.vfs;
-// pdfMake.vfs = {};
-// pdfMake.vfs = RobotoRegularNormal
 pdfMake.fonts = {
     Roboto: {
         normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
@@ -17,7 +13,7 @@ pdfMake.fonts = {
 
 export async function imageToBase64(url) {
     try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/convert-image?url=${url}`);
+        const response = await axios.get(`${API_BASE_URL}/convert-image?url=${url}`);
         return response.data.base64;
     } catch (error) {
         console.error(`Error converting image to base64: ${error}`);
