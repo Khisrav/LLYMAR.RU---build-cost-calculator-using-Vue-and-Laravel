@@ -74,7 +74,16 @@ const router = createRouter({
       component: () => import('../pages/HistoryPage.vue'),
       meta: {
         requiresAuth: true,
-        title: 'Калькулятор - LLYMAR.RU'
+        title: 'История - LLYMAR.RU'
+      }
+    },
+    {
+      path: '/user/cart',
+      name: 'cart',
+      component: () => import('../pages/CartPage.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Корзина - LLYMAR.RU'
       }
     },
     {
