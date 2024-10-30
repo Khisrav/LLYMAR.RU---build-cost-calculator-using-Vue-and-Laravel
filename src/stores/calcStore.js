@@ -14,6 +14,10 @@ import {
 import { getUser } from "../core/user.js";
 import axios from "axios";
 
+
+// Define a mapping for special openings with their corresponding vendor codes
+const someShit = { triangle: 2001, "blind-glazing": 2000 };
+
 export const useCalcStore = defineStore("calcStore", {
     state: () => ({
         token: sessionStorage.getItem("token") || "",
@@ -333,9 +337,6 @@ export const useCalcStore = defineStore("calcStore", {
                 }
             });
 
-            // Define a mapping for special openings with their corresponding vendor codes
-            const someShit = { triangle: 2001, "blind-glazing": 2000 };
-
             // Iterate over each separate opening
             this.separateOpenings.forEach((sO) => {
                 // Skip this iteration if no glass type is selected
@@ -557,15 +558,21 @@ export const useCalcStore = defineStore("calcStore", {
                     height: parseInt(opening.height),
                 });
             });
-
+            
+            // if this.openings has on of the separate openings, add them to this.totals.vendorCodes
             this.separateOpenings.forEach((sO) => {
                 const vc = parseInt(sO.vendor_code.replace(/\D/g, ""));
-                this.totals.vendorCodes[vc] = {
-                    id: vc,
-                    amount: sO.amount,
-                    price: sO.price,
-                    discount: sO.discount,
-                };
+
+                this.openings.forEach(o => {
+                    if (vc == someShit[o.type]) {
+                        this.totals.vendorCodes[vc] = {
+                            id: vc,
+                            amount: sO.amount,
+                            price: sO.price,
+                            discount: sO.discount,
+                        };
+                    }    
+                });
             });
 
             //collecting vendor codes amount data
