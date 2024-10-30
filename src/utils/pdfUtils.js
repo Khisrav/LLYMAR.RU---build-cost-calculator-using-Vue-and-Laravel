@@ -1,10 +1,10 @@
-import pdfMake from "pdfmake/build/pdfmake";
-import { pdfMake as pdfFonts } from "pdfmake/build/vfs_fonts"; // Use named import for pdfFonts
+import "pdfmake/build/pdfmake";
+// import "pdfmake/build/vfs_fonts"; // Use named import for pdfFonts
 import axios from "axios";
 // import RobotoRegularNormal from "../core/Roboto-Regular-normal";
 
 // pdfMake.vfs = pdfFonts.vfs;
-pdfMake.vfs = {};
+// pdfMake.vfs = {};
 // pdfMake.vfs = RobotoRegularNormal
 pdfMake.fonts = {
     Roboto: {
@@ -13,7 +13,7 @@ pdfMake.fonts = {
         italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
         bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
     }
-}
+}   
 
 export async function imageToBase64(url) {
     try {

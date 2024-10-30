@@ -2,8 +2,6 @@
 import { useRouter } from "vue-router";
 import { useCalcStore } from "../stores/calcStore";
 import { useCartStore } from "../stores/cartStore";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
 import { generatePDF, imageToBase64 } from "../utils/pdfUtils";
 import axios from "axios";
 import { discountRate } from "../core/data";
