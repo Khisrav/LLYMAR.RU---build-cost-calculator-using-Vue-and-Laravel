@@ -21,7 +21,7 @@ export async function imageToBase64(url) {
     }
 }
 
-export async function generatePDF(tableData) {
+export async function generatePDF(tableData, totalPrice) {
     const docDefinition = {
         content: [
             {
@@ -43,7 +43,19 @@ export async function generatePDF(tableData) {
                 layout: "lightHorizontalLines",
                 width: "100%", // Full page width
             },
+            {
+                text: `Итого: ${totalPrice}₽`,
+                style: 'totalPrice',
+                alignment: 'right',
+                margin: [0, 10] // Add some margin to separate from the table
+            }
         ],
+        styles: {
+            totalPrice: {
+                fontSize: 14,
+                bold: true
+            }
+        }
     };
 
     pdfMake.createPdf(docDefinition).download(`Perechen-${new Date().toISOString()}.pdf`);

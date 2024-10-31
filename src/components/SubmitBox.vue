@@ -67,7 +67,7 @@ const printEnumeration = async () => {
 
 		// Combine results and generate PDF
 		tableData.push(...vendorData, ...additionalData);
-		await generatePDF(tableData);
+		await generatePDF(tableData, calcStore.totalPrice);
 		isLoading.value = false;
 	} catch (error) {
 		isLoading.value = false;
