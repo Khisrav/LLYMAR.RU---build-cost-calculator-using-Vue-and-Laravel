@@ -5,7 +5,7 @@ const calcStore = useCalcStore();
 </script>
 
 <template>
-  <div class="block">
+  <div class="block print:hidden">
     <div class="shadow-2xl mt-8 pt-8 rounded-2xl shadow-primary-200">
       <div class="relative overflow-x-auto rounded-2xl shadow-2xl shadow-primary-200">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500">
@@ -14,9 +14,9 @@ const calcStore = useCalcStore();
               <th scope="col" class="px-6 py-3">Картинка</th>
               <th scope="col" class="px-6 py-3">Арт.</th>
               <th scope="col" class="px-6 py-3">Наименование</th>
+              <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Цена за ед.</th>
               <th scope="col" class="px-6 py-3">Ед. изм.</th>
-              <th scope="col" class="px-6 py-3">Кол-во</th>
               <th scope="col" class="px-6 py-3">Итого</th>
             </tr>
           </thead>
@@ -25,6 +25,9 @@ const calcStore = useCalcStore();
               v-for="(profile, index) in calcStore.profiles"
               :key="index"
               class="bg-white border-b hover:bg-gray-50"
+              :class="{
+                'print:hidden': profile.amount == 0,
+              }"
             >
               <td scope="row" class="px-6 py-4">
                 <img :src="profile.img" class="max-w-20 md:max-w-60" />
@@ -32,10 +35,6 @@ const calcStore = useCalcStore();
               <td class="px-6 py-4 text-black">{{ index }}</td>
               <td class="px-6 py-4 font-semibold text-black">
                 {{ profile.name }}
-              </td>
-              <td class="px-6 py-4 font-semibold">{{ profile.price }}₽</td>
-              <td class="px-6 py-4">
-                {{ profile.unit }}
               </td>
               <td class="px-6 py-4">
                 <div class="relative mb-6 print:hidden">
@@ -53,6 +52,10 @@ const calcStore = useCalcStore();
                     {{ profile.amount }}
                   </div>
                 </div>
+              </td>
+              <td class="px-6 py-4 font-semibold">{{ profile.price }}₽</td>
+              <td class="px-6 py-4">
+                {{ profile.unit }}
               </td>
               <td class="px-6 py-4 font-semibold">{{ profile.total }}₽</td>
             </tr>

@@ -12,59 +12,55 @@ import ProfilesTable from "../components/ProfilesTable.vue";
 import AutoProfilesTable from "../components/AutoProfilesTable.vue";
 import SubmitBox from "../components/SubmitBox.vue";
 import PricingBlock from "../components/PricingBlock.vue";
+import OfferInfo from "../components/OfferInfo.vue";
 
 export default defineComponent({
-  components: {
-    ButtonTag,
-    InputTag,
-    HeaderLayout,
-    OpeningsTable,
-    AdditionalsTable,
-    MaterialsTable,
-    ProfilesTable,
-    AutoProfilesTable,
-    SubmitBox,
-    PricingBlock,
-  },
-  setup() {
-    const calcStore = useCalcStore();
+	components: {
+		ButtonTag,
+		InputTag,
+		HeaderLayout,
+		OpeningsTable,
+		AdditionalsTable,
+		MaterialsTable,
+		ProfilesTable,
+		AutoProfilesTable,
+		SubmitBox,
+		PricingBlock,
+		OfferInfo,
+	},
+	setup() {
+		const calcStore = useCalcStore();
 
-    onMounted(async () => {
-      await calcStore.fetchVendors();
-    });
+		onMounted(async () => {
+			await calcStore.fetchVendors();
+		});
 
-    return { calcStore };
-  },
+		return { calcStore };
+	},
 });
 </script>
 
 <template>
-  <HeaderLayout class="print:hidden" />
-  <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-0 print:pt-2">
-    <h1
-      class="mb-4 text-2xl uppercase font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl lg:mb-8 print:hidden"
-    >
-      Здравствуйте,
-      <span
-        class="text-transparent bg-clip-text bg-gradient-to-r to-yellow-400 from-orange-600"
-        >{{ calcStore.username }}</span
-      >!
-    </h1>
+	<HeaderLayout class="print:hidden" />
+	<div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-0 print:pt-2">
+		<h1 class="mb-4 text-2xl uppercase font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl lg:mb-8 print:hidden">Калькулятор</h1>
 
-    <main>
-      <OpeningsTable />
+		<main>
+			<OfferInfo />
 
-      <MaterialsTable />
+			<OpeningsTable />
 
-      <ProfilesTable />
+			<MaterialsTable />
 
-      <AutoProfilesTable />
+			<ProfilesTable />
 
-      <PricingBlock />
+			<AutoProfilesTable />
 
-      <AdditionalsTable />
+			<PricingBlock />
 
-      <SubmitBox />
-    </main>
-  </div>
+			<AdditionalsTable />
+
+			<SubmitBox />
+		</main>
+	</div>
 </template>

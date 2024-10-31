@@ -1,7 +1,7 @@
 <script>
 import axios from "axios";
 import { API_BASE_URL, STORAGE_LINK } from "../core/config";
-import { additionals, opening_images } from "../core/data";
+import { additionals, discountRate, opening_images } from "../core/data";
 import ButtonLink from "../components/ButtonLink.vue";
 
 export default {
@@ -39,6 +39,8 @@ export default {
         this.vendors = response.data.vendors;
         this.items = response.data.items;
 
+        this.processDiscounts();
+
         var timeoutRef = setTimeout(() => {
           let isPrinted = false;
           var intervalRef = setInterval(() => {
@@ -60,6 +62,17 @@ export default {
     }
   },
   methods: {
+    processDiscounts() {
+      console.log("processing discounts");
+      console.log(this.additionals);
+      Object.values(this.additionals).forEach((add) => {
+        add.discount = discountRate(add.discount || this.user.discount);
+      });
+
+      Object.values(this.vendorsAmount).forEach((vendor) => {
+        vendor.discount = discountRate(vendor.discount || this.user.discount);
+      });
+    },
     checkImages(callback) {
       var imgs = document.images,
         len = imgs.length,
@@ -143,6 +156,24 @@ export default {
       this.vendors.forEach((v) => {
         if (v.vendor_code == vendor_id) {
           temp = STORAGE_LINK + v.img;
+        }
+      });
+      return temp;
+    },
+    getVendorName(vendor_id) {
+      let temp;
+      this.vendors.forEach((v) => {
+        if (v.vendor_code == vendor_id) {
+          temp = v.name;
+        }
+      });
+      return temp;
+    },
+    getItemName(item_id) {
+      let temp;
+      this.items.forEach((i) => {
+        if (i.vendor_code == item_id) {
+          temp = i.name;
         }
       });
       return temp;
@@ -259,6 +290,7 @@ export default {
       <thead>
         <tr>
           <th>Картинка</th>
+          <th>Наименование</th>
           <th>Арт.</th>
           <th>Цена</th>
           <th>Кол-во</th>
@@ -270,9 +302,10 @@ export default {
           <td>
             <img
               :src="getVendorImage(vendor.vendor_code_id)"
-              style="max-width: 300px; max-height: 150px"
+              style="max-width: 150px; max-height: 150px"
             />
           </td>
+          <td>{{ getVendorName(vendor.vendor_code_id) }}</td>
           <td>L{{ vendor.vendor_code_id }}</td>
           <td>{{ vendor.price }}</td>
           <td>{{ vendor.amount }}</td>
@@ -286,9 +319,10 @@ export default {
           <td>
             <img
               :src="getItemImage(item.item_id)"
-              style="max-width: 300px; max-height: 150px"
+              style="max-width: 150px; max-height: 150px"
             />
           </td>
+          <td>{{ getItemName(item.item_id) }}</td>
           <td>L{{ item.item_id }}</td>
           <td>{{ item.price }}</td>
           <td>{{ item.amount }}</td>
@@ -303,7 +337,7 @@ export default {
 th,
 td {
   border: 1px solid #000;
-  padding: 2px;
+  padding: 4px;
   text-align: center;
 }
 </style>

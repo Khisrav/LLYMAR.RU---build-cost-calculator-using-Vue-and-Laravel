@@ -6,8 +6,12 @@ const api = axios.create({
 });
 
 export const getUser = async () => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if (user) return user;
+    
     try {
         const response = await api.get('/user', {headers: {Authorization: `Bearer ${sessionStorage.getItem('token')}`}});
+        sessionStorage.setItem('user', JSON.stringify(response.data));
         return response.data;
     } catch (error) {
         return error;
