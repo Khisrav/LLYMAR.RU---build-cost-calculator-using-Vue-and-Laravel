@@ -27,11 +27,11 @@ export async function generatePDF(tableData) {
             {
                 table: {
                     headerRows: 1,
-                    widths: [ 60, '*', 'auto', 60,60, 60 ],
+                    widths: [ 90, 30, 'auto', 50,50, 50 ],
                     body: [
                         ["Картинка", "Арт.", "Наименование", "Цена", "Кол-во", "Итого"],
                         ...tableData.map((item) => [
-                            { image: item.image, width: 55, height: 50 },
+                            { image: item.image, width: 85 },
                             item.vendor_code.toString(),
                             item.name.toString(),
                             item.price.toString() + '₽',
@@ -47,5 +47,4 @@ export async function generatePDF(tableData) {
     };
 
     pdfMake.createPdf(docDefinition).download(`Perechen-${new Date().toISOString()}.pdf`);
-    
 }

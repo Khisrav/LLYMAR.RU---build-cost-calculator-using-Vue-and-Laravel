@@ -11,7 +11,7 @@ const calcStore = useCalcStore();
 const cartStore = useCartStore();
 const router = useRouter();
 
-const loadingProgress = ref(0);
+const isLoading = ref(false);
 
 const openCart = () => {
 	calcStore.collectTotals();
@@ -20,38 +20,57 @@ const openCart = () => {
 };
 
 const printEnumeration = async () => {
+	isLoading.value = true;
 	try {
 		calcStore.collectTotals();
 
 		const tableData = [];
-		const vendors = calcStore.totals.vendorCodes;
-		const additionals = calcStore.totals.additionals;
+		const { vendorCodes: vendors, additionals } = calcStore.totals;
 
-		// Use Object.values() to iterate over the vendors object
-		for (const v of Object.values(vendors)) {
-			const vendorInfo = calcStore.vendors.find((item) => item.vendor_code === v.id);
-			if (!vendorInfo) continue; // Skip if vendorInfo is not found
+		// Helper to get a valid numeric value or default
+		const toNumber = (value, defaultValue = 0) => parseFloat(value) || defaultValue;
 
-			const imgBase64 = (await imageToBase64(vendorInfo.img)) || ""; // Fallback to empty string if image fails
+		// Helper to calculate the discount
+		const calculateDiscountedPrice = (price, discount) => parseInt(price * (discount || 1));
 
-			const price = parseFloat(v.price) || 0; // Ensure price is a valid number
-			const discount = discountRate(vendorInfo.discount) || 1; // Ensure discount multiplier is valid
-			const amount = parseFloat(v.amount) || 0; // Ensure amount is a valid number
-			const total = price * amount;
+		// Helper to format item data for the table
+		const formatTableData = (imgBase64, vendorInfo, id, price, amount) => ({
+			image: imgBase64,
+			vendor_code: `L${id}`,
+			name: vendorInfo.name || "Unknown",
+			price: calculateDiscountedPrice(price, vendorInfo.discount),
+			amount: amount.toString(),
+			unit: vendorInfo.unit || "",
+			total: parseInt(price * amount),
+		});
 
-			tableData.push({
-				image: imgBase64,
-				vendor_code: `L${v.id}`,
-				name: vendorInfo.name || "Unknown", // Fallback to 'Unknown' if name is missing
-				price: (price * discount).toString(), // Convert to string with a default fallback
-				amount: amount.toString(), // Convert to string with a default fallback
-				unit: vendorInfo.unit || "", // Fallback to empty string if unit is missing
-				total: total.toString(), // Convert to string with a default fallback
+		// Process each item (vendor or additional) in parallel
+		const processItems = async (items, source) => {
+			const itemPromises = items.map(async (item) => {
+				const vendorInfo = source.find((info) => info.vendor_code === item.id);
+				if (!vendorInfo) return null;
+
+				const imgBase64 = (await imageToBase64(vendorInfo.img)) || "";
+				const price = toNumber(item.price);
+				const amount = toNumber(item.amount);
+
+				return formatTableData(imgBase64, vendorInfo, item.id, price, amount);
 			});
-		}
 
+			// Wait for all items to be processed
+			const processedItems = await Promise.all(itemPromises);
+			return processedItems.filter((data) => data !== null);
+		};
+
+		// Process vendors and additionals simultaneously
+		const [vendorData, additionalData] = await Promise.all([processItems(Object.values(vendors), calcStore.vendors), processItems(additionals, calcStore.additionals)]);
+
+		// Combine results and generate PDF
+		tableData.push(...vendorData, ...additionalData);
 		await generatePDF(tableData);
+		isLoading.value = false;
 	} catch (error) {
+		isLoading.value = false;
 		console.error(`Error generating PDF: ${error}`);
 	}
 };
@@ -92,7 +111,7 @@ const printEnumeration = async () => {
 					<svg class="w-5 h-5 text-black dark:text-white" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
 						<path fill="currentColor" d="M6 13h9v-2H6zm0-3h9V8H6zM4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h16q.825 0 1.413.588T22 6v12q0 .825-.587 1.413T20 20zm0-2h16V6H4zm0 0V6z" />
 					</svg>
-					<span class="text-xs font-semibold">Перечень</span>
+					<span class="text-xs font-semibold">{{ isLoading ? "Загрузка..." : "Перечень" }}</span>
 				</button>
 			</div>
 			<div class="inline-flex flex-col justify-center px-3 rounded-full dark:hover:bg-gray-800 group">
