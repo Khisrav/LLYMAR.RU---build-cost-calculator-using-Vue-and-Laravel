@@ -4,9 +4,11 @@ import { defineStore } from "pinia";
 const calcStore = useCalcStore();
 
 // Ensure vendors are fetched before using them
-if (!calcStore.vendors) {
-    await calcStore.fetchVendors();
-}
+(async () => {
+    if (!calcStore.vendors) {
+        await calcStore.fetchVendors();
+    }
+})();
 
 export const useCartStore = defineStore('cartStore', {
     state: () => ({
