@@ -283,6 +283,7 @@ export const useCalcStore = defineStore("calcStore", {
                 if ([220, 230].includes(additional.vendor_code)) {
                     additional.amount = doorsAmount;
                 }
+                additional.amount = parseInt(additional.amount);
             });
 
             this.updateAutoProfilesData();
@@ -381,7 +382,7 @@ export const useCalcStore = defineStore("calcStore", {
 
         validateAdditionals() {
             this.additionals.forEach((additional) => {
-                additional.amount = additional.amount < 0 ? 0 : additional.amount;
+                additional.amount = additional.amount < 0 ? 0 : parseInt(additional.amount);
             });
         },
 

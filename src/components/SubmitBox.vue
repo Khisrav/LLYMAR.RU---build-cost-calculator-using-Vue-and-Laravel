@@ -15,8 +15,8 @@ const isLoading = ref(false);
 
 const openCart = () => {
 	calcStore.collectTotals();
-	// cartStore.init();
-	// router.push("/user/cart");
+	cartStore.init();
+	router.push("/user/cart");
 };
 
 const printEnumeration = async () => {
@@ -41,7 +41,7 @@ const printEnumeration = async () => {
 			price: calculateDiscountedPrice(price, vendorInfo.discount),
 			amount: amount.toString(),
 			unit: vendorInfo.unit || "",
-			total: parseInt(price * amount),
+			total: parseInt(calculateDiscountedPrice(price, vendorInfo.discount) * amount),
 		});
 
 		// Process each item (vendor or additional) in parallel
@@ -102,7 +102,7 @@ const printEnumeration = async () => {
 					<svg class="w-5 h-5 text-black dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 						<path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M16.444 18H19a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h2.556M17 11V5a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v6h10ZM7 15h10v4a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-4Z" />
 					</svg>
-					<span class="text-xs font-semibold">Печать</span>
+					<span class="text-xs font-semibold">КП</span>
 				</button>
 			</div>
 
@@ -120,13 +120,12 @@ const printEnumeration = async () => {
 					data-modal-target="updateProductModal"
 					data-modal-toggle="updateProductModal"
 					type="button"
-					@click="openCart()"
 					class="flex-col justify-center rounded-e-fulltext-white bg-yellow-300 focus:ring-4 focus:outline-none font-medium rounded-full text-sm px-3 py-1 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 				>
 					<svg class="w-5 h-5 text-black dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 						<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h3a3 3 0 0 0 0-6h-.025a5.56 5.56 0 0 0 .025-.5A5.5 5.5 0 0 0 7.207 9.021C7.137 9.017 7.071 9 7 9a4 4 0 1 0 0 8h2.167M12 19v-9m0 0-2 2m2-2 2 2" />
 					</svg>
-					<span class="text-xs font-semibold">Готово</span>
+					<span class="text-xs font-semibold">Заказ</span>
 				</button>
 			</div>
 		</div>
@@ -231,13 +230,13 @@ const printEnumeration = async () => {
 				</div>
 				<div class="flex items-center space-x-4">
 					<button
-						@click="calcStore.sendTotals(), disableButton"
+						@click="openCart(), disableButton"
 						type="button"
 						data-modal-toggle="updateProductModal"
 						id="sendButton"
 						class="text-black bg-yellow-300 hover:bg-yellow-300 font-semibold focus:ring-4 rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-yellow dark:hover:bg-yellow-300"
 					>
-						Отправить
+						Готово
 					</button>
 				</div>
 			</div>
