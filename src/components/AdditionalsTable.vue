@@ -89,9 +89,7 @@ const calcStore = useCalcStore();
 						</td>
 						<td class="px-6 py-4 font-semibold">
 							<div class="relative mb-6" v-if="item.vendor_code != 1234">
-								<span v-if="item.is_checkable">
-									{{ item.amount }}
-								</span>
+								<span v-if="item.is_checkable"> {{ item.amount }} </span>
 								<input v-else v-model="item.amount" type="number" min="0" @change="calcStore.calculatePrice()" class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5" />
 							</div>
 

@@ -14,6 +14,14 @@ import {
 import { getUser } from "../core/user.js";
 import axios from "axios";
 
+function removeDuplicates(arr) {
+    const seen = new Set();
+    return arr.filter(item => {
+        const isDuplicate = seen.has(item.vendor_code);
+        seen.add(item.vendor_code);
+        return !isDuplicate;
+    });
+}
 
 // Define a mapping for special openings with their corresponding vendor codes
 const someShit = { triangle: 2001, "blind-glazing": 2000 };
@@ -77,14 +85,14 @@ export const useCalcStore = defineStore("calcStore", {
 
             await this.getUserData();
 
-            this.desctructureVendors();
+            this.destructureVendors();
 
             this.calculatePrice();
 
             return this.vendors;
         },
 
-        desctructureVendors() {
+        destructureVendors() {
             const temp_indexes = {
                 L6: 0,
                 L12: 1,
@@ -108,6 +116,7 @@ export const useCalcStore = defineStore("calcStore", {
                 vendorCode === 26 ||
                 vendorCode === 2000 ||
                 vendorCode === 2001;
+            
             const isSeparateOpeningVendor = (vendorCode) =>
                 vendorCode === 2000 || vendorCode === 2001;
 
@@ -162,6 +171,8 @@ export const useCalcStore = defineStore("calcStore", {
                     this.separateOpenings.push(createSeparateOpeningProfile(vendor, this.discount));
                 }
             });
+            
+            this.separateOpenings = removeDuplicates(this.separateOpenings);
 
             this.additionals.forEach((additional) => {
                 if (additional.is_checkable) {
