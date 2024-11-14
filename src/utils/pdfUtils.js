@@ -21,15 +21,52 @@ export async function imageToBase64(url) {
     }
 }
 
-export async function generatePDF(tableData, totalPrice) {
+export async function generatePDF(openingsData, tableData, totalPrice) {
+    //add openingsData table to the pdf
     const docDefinition = {
         content: [
             {
                 table: {
                     headerRows: 1,
+                    widths: [100, '*', 50, 30, 30],
+                    body: [
+                        [
+                            { text: 'Картинка', bold: true },
+                            { text: 'Проем', bold: true },
+                            { text: 'Створок', bold: true },
+                            { text: 'Шир.', bold: true },
+                            { text: 'Выс.', bold: true },
+                        ],
+                        ...openingsData.map((item) => [
+                            { image: item.image, width: 95 },
+                            item.name.toString(),
+                            item.doors.toString(),
+                            item.width.toString(),
+                            item.height.toString(),
+                        ])
+                    ]
+                },
+                // layout: "lightHorizontalLines",
+                layout: {
+                    hLineWidth: () => 0.5,
+                    vLineWidth: () => 0.5,
+                    hLineColor: () => '#AAAAAA',
+                    vLineColor: () => '#FFFFFF',
+                    dontBreakRows: true  
+                },
+                width: "100%", // Full page width
+            },
+            {
+                text: '',
+                margin: [0, 20] // Add margin to create space between tables
+            },
+            {
+                table: {
+                    headerRows: 1,
                     widths: [ 90, 30, 'auto', 50,50, 50 ],
                     body: [
-                        ["Картинка", "Арт.", "Наименование", "Цена", "Кол-во", "Итого"],
+                        // ["Картинка", "Арт.", "Наименование", "Цена", "Кол-во", "Итого"],
+                        [{text: 'Картинка', bold: true}, { text: 'Арт.', bold: true }, { text: 'Наименование', bold: true }, { text: 'Цена', bold: true }, { text: 'Кол-во', bold: true }, { text: 'Итого', bold: true }],
                         ...tableData.map((item) => [
                             { image: item.image, width: 85 },
                             item.vendor_code.toString(),
@@ -40,7 +77,14 @@ export async function generatePDF(tableData, totalPrice) {
                         ]),
                     ],
                 },
-                layout: "lightHorizontalLines",
+                // layout: "lightHorizontalLines",
+                layout: {
+                    hLineWidth: () => 0.5,
+                    vLineWidth: () => 0.5,
+                    hLineColor: () => '#AAAAAA',
+                    vLineColor: () => '#FFFFFF',
+                    dontBreakRows: true  
+                },
                 width: "100%", // Full page width
             },
             {

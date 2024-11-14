@@ -4,7 +4,7 @@ import { useCalcStore } from "../stores/calcStore";
 import { useCartStore } from "../stores/cartStore";
 import { generatePDF, imageToBase64 } from "../utils/pdfUtils";
 import axios from "axios";
-import { discountRate } from "../core/data";
+import { calc, discountRate } from "../core/data";
 import { ref } from "vue";
 
 const calcStore = useCalcStore();
@@ -17,6 +17,44 @@ const openCart = () => {
 	calcStore.collectTotals();
 	cartStore.init();
 	router.push("/user/cart");
+};
+
+const getOpeningsData = async () => {
+	const temp = [];
+
+	const imageToBase64 = async (imageUrl) => {
+		try {
+			const response = await fetch(imageUrl);
+			const blob = await response.blob();
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.readAsDataURL(blob);
+				reader.onloadend = () => resolve(reader.result);
+				reader.onerror = reject;
+			});
+		} catch (error) {
+			console.error(`Error converting image to base64: ${error}`);
+			return null;
+		}
+	};
+
+	const processOpening = async (opening) => {
+		const imageUrl = window.location.origin + calcStore.opening_images[opening.type];
+		const imageBase64 = await imageToBase64(imageUrl);
+
+		return {
+			image: imageBase64,
+			name: opening.name,
+			doors: opening.doors,
+			width: opening.width,
+			height: opening.height,
+		};
+	};
+
+	const openingPromises = calcStore.openings.map(processOpening);
+	const openingsData = await Promise.all(openingPromises);
+
+	return openingsData;
 };
 
 const printEnumeration = async () => {
@@ -44,7 +82,6 @@ const printEnumeration = async () => {
 			total: parseInt(calculateDiscountedPrice(price, vendorInfo.discount) * amount),
 		});
 
-		// Process each item (vendor or additional) in parallel
 		const processItems = async (items, source) => {
 			const itemPromises = items.map(async (item) => {
 				const vendorInfo = source.find((info) => info.vendor_code === item.id);
@@ -57,7 +94,6 @@ const printEnumeration = async () => {
 				return formatTableData(imgBase64, vendorInfo, item.id, price, amount);
 			});
 
-			// Wait for all items to be processed
 			const processedItems = await Promise.all(itemPromises);
 			return processedItems.filter((data) => data !== null);
 		};
@@ -67,7 +103,8 @@ const printEnumeration = async () => {
 
 		// Combine results and generate PDF
 		tableData.push(...vendorData, ...additionalData);
-		await generatePDF(tableData, calcStore.totalPrice);
+		const openingsData = await getOpeningsData();
+		await generatePDF(openingsData, tableData, calcStore.totalPrice);
 		isLoading.value = false;
 	} catch (error) {
 		isLoading.value = false;
