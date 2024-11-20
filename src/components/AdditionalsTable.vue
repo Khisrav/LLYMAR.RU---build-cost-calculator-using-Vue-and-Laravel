@@ -61,16 +61,7 @@ const calcStore = useCalcStore();
 							</div>
 						</td>
 						<td class="px-6 py-4 font-semibold print:hidden">
-							<span v-if="item.vendor_code != 1234">{{ item.price }} ₽</span>
-							<!-- <div v-else>
-                <input
-                  type="number"
-                  v-model="item.price"
-                  @change="calcStore.calculatePrice()"
-                  min="0"
-                  class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-                />
-              </div> -->
+							<span v-if="item.vendor_code != 1234">{{ parseInt(item.price * item.discount) }}₽</span>
 							<div class="flex" v-else>
 								<span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600"> ₽ </span>
 								<input
@@ -93,10 +84,10 @@ const calcStore = useCalcStore();
 								<input v-else v-model="item.amount" type="number" min="0" @change="calcStore.calculatePrice()" class="w-20 bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5" />
 							</div>
 
-							<span class="hidden print:block" v-else>{{ item.price }} ₽</span>
+							<span class="hidden print:block" v-else>{{ item.price }}₽</span>
 						</td>
 						<td class="px-6 py-4 font-semibold print:hidden">
-							<span v-if="item.vendor_code != 1234">{{ item.total }} ₽</span>
+							<span v-if="item.vendor_code != 1234">{{ item.total }}₽</span>
 						</td>
 					</tr>
 				</tbody>

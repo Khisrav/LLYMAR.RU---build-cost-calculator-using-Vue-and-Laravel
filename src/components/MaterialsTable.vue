@@ -73,7 +73,7 @@ const calcStore = useCalcStore();
 							<td class="px-6 py-4">
 								{{ material.amount }}
 							</td>
-							<td class="px-6 py-4 font-semibold">{{ material.price }}₽</td>
+							<td class="px-6 py-4 font-semibold">{{ parseInt(material.price * material.discount) }}₽</td>
 							<td class="px-6 py-4">
 								{{ material.unit }}
 							</td>

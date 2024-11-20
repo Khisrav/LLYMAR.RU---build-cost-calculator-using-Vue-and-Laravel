@@ -79,7 +79,6 @@ export const useCalcStore = defineStore("calcStore", {
             this.additionals.forEach((item) => {
                 item.total = 0;
                 item.amount = 0;
-                // item.img = STORAGE_LINK + item.img;
                 item.discount = discountRate(item.discount || this.discount);
             });
 
@@ -389,6 +388,8 @@ export const useCalcStore = defineStore("calcStore", {
                     sO.price += parseInt(formula);
                 });
             });
+            
+            this.totals.totalPrice = this.totalPrice;
         },
 
         validateAdditionals() {
@@ -714,6 +715,74 @@ export const useCalcStore = defineStore("calcStore", {
                 this.showError = true;
             }
         },
+        
+        //cart logic
+        getItemInfo(id) {
+            const vendor = this.vendors?.find((item) => item.vendor_code == id);
+            const additional = this.additionals?.find((item) => item.vendor_code == id);
+            return vendor || additional;
+        },
+        addItem(id) {
+            const item = this.getItemInfo(id);
+            if (item) {
+                if (!this.totals.vendorCodes[id]) {
+                    this.totals.vendorCodes = {
+                        ...this.totals.vendorCodes,
+                        [id]: {
+                            id,
+                            amount: 1,
+                            price: item.price,
+                            discount: item.discount,
+                        },
+                    };
+                } else {
+                    const additionalItem = this.totals.additionals.find((add) => add.id === id);
+                    if (!additionalItem) {
+                        this.totals.additionals.push({
+                            id,
+                            amount: 1,
+                            price: item.price,
+                            discount: item.discount,
+                        });
+                    }
+                }
+                this.collectTotals();
+                this.calculatePrice();
+            }
+        },
+        removeItem(id) {
+            console.log('Removing item with id:', id);
+            let itemPrice = 0; // To track the price of the removed item
+        
+            const index = this.totals.additionals.findIndex((item) => item.id === id);
+            if (index !== -1) {
+                console.log('Item found in additionals.');
+                const item = this.totals.additionals[index];
+                itemPrice = item.price * item.discount * item.amount;
+        
+                this.totals.additionals = [
+                    ...this.totals.additionals.slice(0, index),
+                    ...this.totals.additionals.slice(index + 1),
+                ];
+                console.log('Updated additionals:', this.totals.additionals);
+            } 
+            else if (this.totals.vendorCodes.hasOwnProperty(id)) {
+                console.log('Item found in vendorCodes.');
+                const item = this.totals.vendorCodes[id];
+                itemPrice = item.price * item.discount * item.amount;
+        
+                // Create a new object without the removed item
+                const updatedVendorCodes = { ...this.totals.vendorCodes };
+                delete updatedVendorCodes[id];
+                this.totals.vendorCodes = updatedVendorCodes;
+                console.log('Updated vendorCodes:', this.totals.vendorCodes);
+            } else { console.log(`Item with id ${id} not found.`); }
+        
+            if (itemPrice > 0) {
+                this.totals.totalPrice -= parseInt(itemPrice);
+                console.log(`Subtracted ${itemPrice} from total price. New total: ${this.totals.totalPrice}`);
+            }
+        },
     },
     getters: {
         totalPrice: (state) => {
@@ -741,7 +810,7 @@ export const useCalcStore = defineStore("calcStore", {
 
             const sO_price = state.separateOpenings.reduce((acc, sO) => acc + sO.price, 0);
 
-            state.totals.totalPrice =
+            const totalPrice =
                 materials_price +
                 autoProfiles_price +
                 additionals_price +
@@ -749,7 +818,7 @@ export const useCalcStore = defineStore("calcStore", {
                 state.delivery +
                 sO_price;
 
-            return state.totals.totalPrice;
-        },
+            return totalPrice;
+        }
     },
 });
