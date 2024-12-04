@@ -293,7 +293,7 @@ export const useCalcStore = defineStore("calcStore", {
                 if ([220, 230].includes(additional.vendor_code)) {
                     additional.amount = doorsAmount;
                 }
-                additional.amount = parseInt(additional.amount);
+                additional.amount = (additional.amount);
             });
 
             this.updateAutoProfilesData();
@@ -394,7 +394,7 @@ export const useCalcStore = defineStore("calcStore", {
 
         validateAdditionals() {
             this.additionals.forEach((additional) => {
-                additional.amount = additional.amount < 0 ? 0 : parseInt(additional.amount);
+                additional.amount = additional.amount < 0 ? 0 : (additional.amount);
             });
         },
 
@@ -631,7 +631,7 @@ export const useCalcStore = defineStore("calcStore", {
 
             this.totals.additionals = [];
             this.additionals.forEach((additional) => {
-                additional.amount = parseInt(additional.amount);
+                additional.amount = (additional.amount);
                 if (
                     additional.amount > 0 &&
                     ((additional.is_checkable && additional.checked) || !additional.is_checkable)
